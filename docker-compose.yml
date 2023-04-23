@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: document-processor
+    build: ./document_processor
+    command: uvicorn main:app --app-dir ./src/ --host 0.0.0.0 --port ${port:-8000} --reload
+    volumes:
+      - ./document_processor/:/app
+    ports:
+      - ${port:-8000}:${port:-8000}
+    env_file: .env

@@ -1,92 +1,121 @@
-# ING
+# ING 2 Project - Proof of Concept
 
+This is the POC for the course Software Engineering. This application receives pdf documents over a POST request and returns the document type (ID card, driver's license or passport).
 
+## Table of Contents
 
-## Getting started
+* [1. Tech Stack](#1-tech-stack)
+* [2. API Reference](#2-api-reference)
+* [3. Run in Docker Compose - Development Mode](#3-run-in-docker-compose---development-mode)
+* [4. Run in Docker Compose - Production Mode](#4-run-in-docker-compose---production-mode)
+* [5. Project CI](#5-project-ci)
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## 1. Tech Stack
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- Python 3.9
+- FastAPI
+- Tensorflow
 
-## Add your files
+### Development
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- Pytest (Unit test framework)
+- Black (Code formatter)
+- isort (Dependency manager)
 
+## 2. API Reference
+
+This project is used using the an API.
+
+### POST Identity document
+
+```http
+  POST /document/
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/rug-cs/courses/software-engineering/ing-2-2023/ing.git
-git branch -M main
-git push -uf origin main
+
+| Parameter  | Type   | Description                              |
+| :--------- | :----- | :--------------------------------------- |
+| `document` | `file` | **Required**. Document to be classified |
+
+## 3. Run in Docker Compose - Development Mode
+
+This mode runs the fast api app with hot reload enabled, so any changes made to the code will be reflected in the docker container and the code will hot reload.
+
+Create the env file from `.env.example`:
+
+```terminal
+cp .\.env.example .\.env
 ```
 
-## Integrate with your tools
+Build the docker compose and then run it:
 
-- [ ] [Set up project integrations](https://gitlab.com/rug-cs/courses/software-engineering/ing-2-2023/ing/-/settings/integrations)
+```terminal
+docker-compose build
+docker-compose up -d
+```
 
-## Collaborate with your team
+Or do that in one command:
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+```terminal
+docker-compose up -d --build
+```
 
-## Test and Deploy
+View the logs in follow mode:
 
-Use the built-in continuous integration in GitLab.
+```terminal
+docker-compose logs -f
+```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+Run tests:
 
-***
+```terminal
+docker-compose exec app pytest
+```
 
-# Editing this README
+## 4. Run in Docker Compose - Production Mode
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+This mode runs the fast api app with hot reload disabled.
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+Create the env file from `.env.example`:
 
-## Name
-Choose a self-explaining name for your project.
+```terminal
+cp .\.env.example .\.env
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Build the docker compose and then run it:
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+```terminal
+docker-compose -f docker-compose.prod.yml build
+docker-compose -f docker-compose.prod.yml up -d
+```
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+Or do that in one command:
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+```terminal
+docker-compose -f docker-compose.prod.yml up -d --build
+```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+View the logs in follow mode:
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+```terminal
+docker-compose -f docker-compose.prod.yml logs -f
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+## 5. Project CI
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+This project uses GitLab CI to ensure code quality.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+The pipeline builds the docker image, and runs code style checks and then runs tests.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+### Linting
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+This project uses `black` and `isort` for python linting. Before committing to the git repository, please run the following to ensure compliance:
 
-## License
-For open source projects, say how it is licensed.
+```terminal
+docker-compose exec app /bin/bash run_linters.sh
+```
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Or use docker compose run:
+
+```terminal
+docker-compose run app /bin/bash run_linters.sh
+```
