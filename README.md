@@ -1,6 +1,6 @@
-# ING 2 Project - Proof of Concept
+# ING 2 Project - Production
 
-This is the POC for the course Software Engineering. This application receives pdf documents over a POST request and returns the document type (ID card, driver's license or passport).
+This is the production repo for the course Software Engineering. This application receives pdf documents over a POST request and returns the document type (ID card, driver's license or passport).
 
 ## Table of Contents
 
