@@ -6,7 +6,6 @@ services:
 stages:
   - build
   - test
-  - setup_sonarqube
   - sonarqube-check
 
 before_script:
@@ -25,14 +24,6 @@ testing:
     # - docker-compose run app isort . --check-only --profile black
     # - docker-compose run app pytest -v 
 
-setup_sonarqube:
-  image: sonarqube:8.9.2-community
-  script:
-    - echo "sonar.jdbc.username=sonar" >> /opt/sonarqube/conf/sonar.properties
-    - echo "sonar.jdbc.password=sonar" >> /opt/sonarqube/conf/sonar.properties
-    - echo "sonar.jdbc.url=jdbc:postgresql://sonarqube-db:5432/sonar" >> /opt/sonarqube/conf/sonar.properties
-    - /opt/sonarqube/bin/run.sh
-
 sonarqube-check:
   stage: sonarqube-check
   image: 
@@ -46,13 +37,7 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script: 
-    - sonar-scanner \
-        -Dsonar.projectKey=my_project \
-        -Dsonar.sources=. \
-        -Dsonar.host.url=http://sonarqube:9000
-  # Define dependencies on the setup_sonarqube job
-  needs: [setup_sonarqube]
-
+    - sonar-scanner
   allow_failure: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
