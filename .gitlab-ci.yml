@@ -25,7 +25,6 @@ testing:
     # - docker-compose run app pytest -v 
 
 sonarqube-check:
-  stage: sonarqube-check
   image: 
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
@@ -41,3 +40,4 @@ sonarqube-check:
   allow_failure: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
+
