@@ -14,12 +14,12 @@ class DocumentProcessor(ABC):
     def process_document(self, document):
         pass
 
-
+# TODO refractor
 class NeuralNetworkDocumentProcessor(DocumentProcessor):
     def __init__(self, pipelineBuilder: DocumentProcessorPipelineBuilder):
         super().__init__(pipelineBuilder)
 
     def process_document(self, document):
         data = {"pdf_bytes": document}
-        data = self.document_processing_pipeline.processDocument(data)
+        data = self.document_processing_pipeline.process_document(data)
         return data

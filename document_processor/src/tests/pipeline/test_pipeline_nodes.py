@@ -14,7 +14,7 @@ from document_processor.pipeline.pipeline_nodes import (
 class Test_DocumentProcessingNode:
     def test_processDocument_not_implemented(self):
         with pytest.raises(TypeError):
-            DocumentProcessingNode().processDocument(data={})
+            DocumentProcessingNode().process_document(data={})
 
 
 class Test_PdfToImageConverterNode:
@@ -30,7 +30,7 @@ class Test_PdfToImageConverterNode:
         data = {"pdf_bytes": pdf_bytes}
 
         # Run test
-        result = node.processDocument(data)
+        result = node.process_document(data)
 
         assert converter_mock.convert.called_once_with(pdf_bytes)
         assert result["jpg_bytes"] == jpg_bytes

@@ -7,10 +7,10 @@ class DocumentProcessorPipeline(ABC):
     def __init__(self):
         self.processing_nodes: list[DocumentProcessingNode] = []
 
-    def addProcessingNode(self, node: DocumentProcessingNode):
+    def add_processing_node(self, node: DocumentProcessingNode):
         self.processing_nodes.append(node)
 
-    def processDocument(self, data: dict):
+    def process_document(self, data: dict):
         for node in self.processing_nodes:
-            data = node.processDocument(data)
+            data = node.process_document(data)
         return data
