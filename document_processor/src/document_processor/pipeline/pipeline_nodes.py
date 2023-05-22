@@ -40,17 +40,18 @@ class EffNetDocumentClassifier(DocumentProcessingNode):
     def classify_image(self, image):
         # TODO add if
         image = image.resize((224, 224))
-
         # Convert the image into an array
         img_array = tf.keras.utils.img_to_array(image)
-        # Convert the array into a barch
+        # Convert the array into a batch
         img_batch = tf.expand_dims(img_array, 0)
+        # Get model predictions
+        predictions = self.model.predict(img_batch)
+        # Get highest prediction
+        prediction = np.argmax(predictions[0])
+        # Get predicted clas
+        predicted_class = self.document_classes[prediction]
 
-        prediction = self.model_path.predict(img_batch)
-
-        print(f"{prediction}")
-
-        return "Hello there."
+        return predicted_class
 
     def process_document(self, data: dict):
         # TODO check that data dict has this element
