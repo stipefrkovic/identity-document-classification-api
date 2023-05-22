@@ -23,7 +23,7 @@ class EffNetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
         pdf_2_image_node = PdfToImageConverterNode(PdfToJpgConverter())
         pipeline.add_processing_node(pdf_2_image_node)
 
-        eff_net_node = EffNetDocumentClassifier("./src/document_processor/pipeline/models/TODO")
+        eff_net_node = EffNetDocumentClassifier("./src/document_processor/pipeline/models/effnet")
         pipeline.add_processing_node(eff_net_node)
         
         return pipeline

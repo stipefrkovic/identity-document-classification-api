@@ -32,11 +32,10 @@ class EffNetDocumentClassifier(DocumentProcessingNode):
     document_classes = ["driving_license", "id_card", "passport"]
 
     def __init__(self, model_path):
-        self.model_path = model_path
-        self.model = self.load_model(self.model_path)
+        self.model = self.load_model(model_path)
 
-    def load_model(self):
-        return tf.keras.models.load_model(self.model_path)
+    def load_model(self, model_path):
+        return tf.keras.models.load_model(model_path)
 
     def classify_image(self, image):
         # TODO add if
