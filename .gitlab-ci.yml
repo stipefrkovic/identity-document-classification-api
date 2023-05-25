@@ -48,6 +48,7 @@ sonarqube-check:
     - ls reports/
     - ls document_processor/
     - ls document_processor/src/
+    - ls document_processor/src/tests
     - sonar-scanner
   allow_failure: true
   rules:
