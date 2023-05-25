@@ -25,7 +25,10 @@ testing:
     - docker cp tests_app:/app/reports/coverage.xml coverage.xml
     # - docker-compose run app black --check .
     # - docker-compose run app isort . --check-only --profile black
-    # - docker-compose run app pytest -v 
+    # - docker-compose run app pytest -v
+  artifacts:
+    paths:
+      - coverage.xml  # There is a change that this expires 1 hour from last CI build
 
 sonarqube-check:
   needs: ["testing"]
