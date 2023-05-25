@@ -106,6 +106,13 @@ This project uses GitLab CI to ensure code quality.
 
 The pipeline builds the docker image, and runs code style checks and then runs tests.
 
+
+### Unit Tests Report
+To generate a unit tests report for sonarqube, run the following command:
+```terminal
+docker-compose exec app /bin/bash generate_unit_tests_report.sh
+```
+
 ### Linting
 
 This project uses `black` and `isort` for python linting. Before committing to the git repository, please run the following to ensure compliance:
