@@ -1,9 +1,9 @@
 [run]
-source =
-    src
+relative_files = True
+include =
+    src/*
 omit =
     tests/*
-relative_files = True
 
 [paths]
 source =
