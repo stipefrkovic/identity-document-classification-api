@@ -38,7 +38,9 @@ sonarqube-check:
     key: "${CI_JOB_NAME}"
     paths:
       - .sonar/cache
-  script: 
+  script:
+    - pwd
+    - ls
     - sonar-scanner
   allow_failure: true
   rules:
