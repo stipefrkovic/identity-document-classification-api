@@ -20,8 +20,6 @@ testing:
   stage: test
   script:
     - docker-compose build
-    - docker-compose run --name tests_app app /bin/bash generate_unit_tests_report.sh
-    - docker cp tests_app:/app/reports .
     # - docker-compose run app black --check .
     # - docker-compose run app isort . --check-only --profile black
     # - docker-compose run app pytest -v 
@@ -39,7 +37,12 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script:
+    - docker-compose build  # TODO: this can probably be optimized but I do not know how
+    - docker-compose run --name tests_app app /bin/bash generate_unit_tests_report.sh
+    - docker cp tests_app:/app/reports .
+    - ls
     - ls document_processor/
+    - ls document_processor/src
     - sonar-scanner
   allow_failure: true
   rules:
