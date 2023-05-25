@@ -20,6 +20,7 @@ testing:
   stage: test
   script:
     - docker-compose build
+    - docker-compose run app /bin/bash run_linters.sh
     # - docker-compose run app black --check .
     # - docker-compose run app isort . --check-only --profile black
     # - docker-compose run app pytest -v 
@@ -37,7 +38,6 @@ sonarqube-check:
       - .sonar/cache
   script: 
     - sonar-scanner
-    - docker-compose exec app /bin/bash run_linters.sh
   allow_failure: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
