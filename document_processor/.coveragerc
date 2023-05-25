@@ -3,8 +3,9 @@ source =
     src
 omit =
     tests/*
+relative_files = True
 
 [paths]
 source =
-    ./src
-    /app/src
+    src
+    document_processor/src
