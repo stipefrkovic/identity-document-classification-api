@@ -39,8 +39,7 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script:
-    - pwd
-    - ls
+    - ls document_processor/
     - sonar-scanner
   allow_failure: true
   rules:
