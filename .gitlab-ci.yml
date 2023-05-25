@@ -20,14 +20,14 @@ testing:
   stage: test
   script:
     - docker-compose build
-    - docker-compose run --name tests_app app /bin/bash generate_unit_tests_report.sh
-    - docker cp tests_app:/app/reports/ .
+    - docker-compose run --name tests_app app /bin/bash generate_unit_tests_report.sh  # run tests for coverage
+    - docker cp tests_app:/app/reports/ .  # copy coverage reports into CI
 #     - docker-compose run app black --check .
 #     - docker-compose run app isort . --check-only --profile black
 #     - docker-compose run app pytest -v --junitxml=reports/pytest.xml
   artifacts:
     paths:
-      - reports/coverage.xml  # There is a change that this expires 1 hour from last CI build
+      - reports/coverage.xml  # There is a change that these expire 1 hour from last CI build
       - reports/pytest.xml
 
 sonarqube-check:
@@ -41,10 +41,9 @@ sonarqube-check:
   cache:
     key: "${CI_JOB_NAME}"
     paths:
-      - ls
       - .sonar/cache
   script:
-    - sed -i 's|/app/||g' coverage.xml
+    - ls
     - sonar-scanner
   allow_failure: true
   rules:
