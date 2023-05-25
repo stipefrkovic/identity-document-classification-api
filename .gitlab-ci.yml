@@ -21,7 +21,7 @@ testing:
   script:
     - docker-compose build
     - docker-compose run app /bin/bash generate_unit_tests_report.sh
-    - docker cp $(docker-compose ps -q app):/document_processor/reports .
+    - docker cp $(docker-compose ps -q app):/app/reports .
     # - docker-compose run app black --check .
     # - docker-compose run app isort . --check-only --profile black
     # - docker-compose run app pytest -v 
