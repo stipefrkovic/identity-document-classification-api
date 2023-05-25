@@ -21,7 +21,8 @@ testing:
   script:
     - docker-compose build
     - docker-compose run --name tests_app app /bin/bash generate_unit_tests_report.sh
-    - docker cp tests_app:/app/reports/coverage.xml .
+    - docker cp tests_app:/app/reports/coverage.xml /builds/rug-cs/courses/software-engineering/ing-2-2023/ing/coverage.xml
+    - docker cp tests_app:/app/reports/coverage.xml coverage.xml
     # - docker-compose run app black --check .
     # - docker-compose run app isort . --check-only --profile black
     # - docker-compose run app pytest -v 
@@ -40,7 +41,7 @@ sonarqube-check:
       - .sonar/cache
   script:
     - pwd
-    - ls ..
+    - ls
     - sonar-scanner
   allow_failure: true
   rules:
