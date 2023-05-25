@@ -1,8 +1,11 @@
 [run]
-source = ing/document_processor
-relative_files = True
+source =
+    document_processor/src/document_processor
+    document_processor/src/main.py
+omit =
+    */tests/*
 
 [paths]
 source =
-    ing/document_processor
-    /app/ing/document_processor
+    document_processor/src/document_processor
+    /app/document_processor/src/document_processor
