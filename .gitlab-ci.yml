@@ -43,7 +43,7 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script:
-    - ls
+    - ls reports/
     - sonar-scanner
   allow_failure: true
   rules:
