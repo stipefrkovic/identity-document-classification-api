@@ -9,3 +9,16 @@ file="reports/coverage.xml"
 
 # Use sed to perform the replacement
 sed -i "s#${old_path}#${new_path}#g" "${file}"
+
+
+# The paths to replace
+old_path="src\."
+new_path="document_processor\.src\."
+
+# The coverage report file
+file="reports/pytest.xml"
+
+# Use sed to perform the replacement
+sed -i "s#${old_path}#${new_path}#g" "${file}"
+
+
