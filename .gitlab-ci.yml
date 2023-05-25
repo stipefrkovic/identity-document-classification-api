@@ -22,6 +22,7 @@ testing:
     - docker-compose build
     - docker-compose run --name tests_app app /bin/bash generate_unit_tests_report.sh  # run tests for coverage
     - docker cp tests_app:/app/reports/ .  # copy coverage reports into CI
+    - docker-compose run --name tests_app app /bin/bash generate_unit_tests_report.sh  # change the directories fot CI
 #     - docker-compose run app black --check .
 #     - docker-compose run app isort . --check-only --profile black
 #     - docker-compose run app pytest -v

@@ -5,7 +5,3 @@ include =
 omit =
     tests/*
 
-[paths]
-source =
-    ./
-    document_processor/src/
