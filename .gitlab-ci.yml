@@ -24,7 +24,7 @@ testing:
     - docker cp tests_app:/app/reports/ .  # copy coverage reports into CI
 #     - docker-compose run app black --check .
 #     - docker-compose run app isort . --check-only --profile black
-#     - docker-compose run app pytest -v --junitxml=reports/pytest.xml
+#     - docker-compose run app pytest -v
   artifacts:
     paths:
       - reports/coverage.xml  # There is a change that these expire 1 hour from last CI build
@@ -43,7 +43,11 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script:
+    - pwd
+    - ls
     - ls reports/
+    - ls document_processor/
+    - ls document_processor/src/
     - sonar-scanner
   allow_failure: true
   rules:
