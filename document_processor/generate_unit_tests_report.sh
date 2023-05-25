@@ -1,1 +1,1 @@
-pytest --cov=./ --cov-report xml:reports/coverage.xml
+pytest --cov=./ --cov-config=.coveragerc --cov-report xml:reports/coverage.xml

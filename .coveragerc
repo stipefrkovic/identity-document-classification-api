@@ -1,0 +1,8 @@
+[run]
+source = ing/document_processor
+relative_files = True
+
+[paths]
+source =
+    ing/document_processor
+    /app/ing/document_processor
