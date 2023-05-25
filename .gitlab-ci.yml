@@ -21,9 +21,7 @@ testing:
   script:
     - docker-compose build
     - docker-compose run --name tests_app app /bin/bash generate_unit_tests_report.sh
-    - docker exec tests_app ls /app/reports
-    - docker cp tests_app:/app/reports .
-    - ls reports
+    - docker cp tests_app:/app/reports/coverage.xml .
     # - docker-compose run app black --check .
     # - docker-compose run app isort . --check-only --profile black
     # - docker-compose run app pytest -v 
