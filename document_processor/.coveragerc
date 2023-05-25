@@ -7,5 +7,5 @@ omit =
 
 [paths]
 source =
-    src/
+    ./
     document_processor/src/
