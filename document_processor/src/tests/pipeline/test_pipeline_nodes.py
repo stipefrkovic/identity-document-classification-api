@@ -101,7 +101,7 @@ class Test_NNDocumentIdentifierNode:
     @pytest.fixture
     def mock_node(self, mocker):
         mock_node = mocker.Mock(spec=NNDocumentIdentifierNode)
-        mock_node.processDocument.return_value = {"document_type": "passport"}
+        mock_node.process_document.return_value = {"document_type": "passport"}
 
         return mock_node
 
@@ -115,7 +115,7 @@ class Test_NNDocumentIdentifierNode:
         return {"jpg_bytes": jpg_bytes}
 
     def test_processDocument_returns_classification_result(self, mock_node, input_data):
-        result = mock_node.processDocument(input_data)
+        result = mock_node.process_document(input_data)
 
         assert "document_type" in result
         assert result["document_type"] == "passport"

@@ -12,7 +12,7 @@ class Test_DocumentProcessor:
     def test_process_document_not_implemented(self, mocker):
         with pytest.raises(TypeError):
             pipeline_builder = mocker.Mock(spec=DocumentProcessorPipelineBuilder)
-            DocumentProcessor().processDocument(pipeline_builder)
+            DocumentProcessor().process_document(pipeline_builder)
 
 
 class Test_NeuralNetworkDocumentProcessor:
@@ -23,7 +23,7 @@ class Test_NeuralNetworkDocumentProcessor:
 
         processor = NeuralNetworkDocumentProcessor(pipeline_builder)
         document = b"PDF document contents"
-        pipeline.processDocument.return_value = {
+        pipeline.process_document.return_value = {
             "pdf_text": "Hello, there!",
             "processed": True,
         }
@@ -31,7 +31,7 @@ class Test_NeuralNetworkDocumentProcessor:
         result = processor.process_document(document)
 
         assert result == {"pdf_text": "Hello, there!", "processed": True}
-        assert pipeline.processDocument.call_count == 1
-        assert pipeline.processDocument.call_args == mocker.call(
+        assert pipeline.process_document.call_count == 1
+        assert pipeline.process_document.call_args == mocker.call(
             {"pdf_bytes": document}
         )
