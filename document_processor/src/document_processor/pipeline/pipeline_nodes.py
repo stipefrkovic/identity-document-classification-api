@@ -61,7 +61,37 @@ class EffNetDocumentClassifier(DocumentProcessingNode):
         data["document_type"] = classification_result
         return data
 
+class EffDetDocumentClassifier(DocumentProcessingNode):
+    # TODO put somewhere else
+    document_classes = ["driving_license", "id_card", "passport"]
 
+    def __init__(self, model_path):
+        self.model = self.load_model(model_path)
+
+    def load_model(self, model_path):
+        return tf.saved_model.load(model_path)
+
+    def classify_image(self, image):
+        # image = image.convert('RGB')
+        (im_width, im_height) = image.size
+        image_np = np.array(image.getdata()).reshape(
+            (im_height, im_width, 3)).astype(np.uint8)
+        input_tensor = tf.convert_to_tensor(image_np)
+        input_tensor = input_tensor[tf.newaxis, ...]
+        detections = self.model(input_tensor)
+        highest_index = np.argmax(detections['detection_scores'][0])
+        highest_class_index = detections['detection_classes'][0][highest_index].numpy().astype(np.int)
+        highest_class = self.document_classes[highest_class_index - 1]
+        # highest_confidence = detections['detection_scores'][0][highest_index].numpy()
+        return highest_class
+
+    def process_document(self, data: dict):
+        jpg_bytes = data["jpg_bytes"]
+        pil_image = Image.open(jpg_bytes)
+        highest_class = self.classify_image(pil_image)
+        # Do something with the highest class and confidence
+        data["document_type"] = highest_class
+        return data
 
 class NNDocumentIdentifierNode(DocumentProcessingNode):
     # TODO put somewhere else

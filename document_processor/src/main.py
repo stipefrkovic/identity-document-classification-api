@@ -4,13 +4,14 @@ from pydantic import BaseModel
 from document_processor.document_processor import NeuralNetworkDocumentProcessor
 from document_processor.pipeline.builder import (
     NeuralNetworkDocumentProcessorPipelineBuilder,
-    EffNetDocumentProcessorPipelineBuilder
+    EffNetDocumentProcessorPipelineBuilder,
+    EffDetDocumentProcessorPipelineBuilder
 )
 
 app = FastAPI()
 
 # pipeline_builder = NeuralNetworkDocumentProcessorPipelineBuilder()
-pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
+pipeline_builder = EffDetDocumentProcessorPipelineBuilder()
 document_processor = NeuralNetworkDocumentProcessor(pipeline_builder)
 
 

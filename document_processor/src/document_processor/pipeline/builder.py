@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from .pdf_to_image_converter import PdfToJpgConverter
 from .pipeline import DocumentProcessorPipeline
-from .pipeline_nodes import NNDocumentIdentifierNode, PdfToImageConverterNode, EffNetDocumentClassifier
+from .pipeline_nodes import NNDocumentIdentifierNode, PdfToImageConverterNode, EffNetDocumentClassifier, EffDetDocumentClassifier
 
 
 class DocumentProcessorPipelineBuilder(ABC):
@@ -24,6 +24,21 @@ class EffNetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
         pipeline.add_processing_node(pdf_2_image_node)
 
         eff_net_node = EffNetDocumentClassifier("./src/document_processor/pipeline/models/effnet")
+        pipeline.add_processing_node(eff_net_node)
+        
+        return pipeline
+    
+class EffDetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
+    def __init__(self):
+        super().__init__()
+
+    def build(self):
+        pipeline = DocumentProcessorPipeline()
+
+        pdf_2_image_node = PdfToImageConverterNode(PdfToJpgConverter())
+        pipeline.add_processing_node(pdf_2_image_node)
+
+        eff_net_node = EffDetDocumentClassifier("./src/document_processor/pipeline/models/effdet")
         pipeline.add_processing_node(eff_net_node)
         
         return pipeline
