@@ -1,0 +1,7 @@
+[run]
+relative_files = True
+include =
+    src/*
+omit =
+    tests/*
+
