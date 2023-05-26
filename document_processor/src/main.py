@@ -10,7 +10,6 @@ from document_processor.pipeline.builder import (
 
 app = FastAPI()
 
-# pipeline_builder = NeuralNetworkDocumentProcessorPipelineBuilder()
 pipeline_builder = EffDetDocumentProcessorPipelineBuilder()
 document_processor = NeuralNetworkDocumentProcessor(pipeline_builder)
 

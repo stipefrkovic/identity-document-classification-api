@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-# from tflite_support.task import vision
 import tensorflow as tf
 from PIL import Image
 
@@ -72,7 +71,6 @@ class EffDetDocumentClassifier(DocumentProcessingNode):
         return tf.saved_model.load(model_path)
 
     def classify_image(self, image):
-        # image = image.convert('RGB')
         (im_width, im_height) = image.size
         image_np = np.array(image.getdata()).reshape(
             (im_height, im_width, 3)).astype(np.uint8)
@@ -82,7 +80,6 @@ class EffDetDocumentClassifier(DocumentProcessingNode):
         highest_index = np.argmax(detections['detection_scores'][0])
         highest_class_index = detections['detection_classes'][0][highest_index].numpy().astype(np.int)
         highest_class = self.document_classes[highest_class_index - 1]
-        # highest_confidence = detections['detection_scores'][0][highest_index].numpy()
         return highest_class
 
     def process_document(self, data: dict):
@@ -100,8 +97,6 @@ class NNDocumentIdentifierNode(DocumentProcessingNode):
     def __init__(self, interpreter: tf.lite.Interpreter):
         self.interpreter = interpreter
         self.interpreter.allocate_tensors()
-
-        # self.classifier = vision.ImageClassifier.create_from_file(model_path)
 
     def classify_image(self, image):
 

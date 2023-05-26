@@ -11,17 +11,17 @@ from document_processor.pipeline.pipeline import DocumentProcessorPipeline
 class Test_DocumentProcessor:
     def test_process_document_not_implemented(self, mocker):
         with pytest.raises(TypeError):
-            pipelineBuilder = mocker.Mock(spec=DocumentProcessorPipelineBuilder)
-            DocumentProcessor().processDocument(pipelineBuilder)
+            pipeline_builder = mocker.Mock(spec=DocumentProcessorPipelineBuilder)
+            DocumentProcessor().processDocument(pipeline_builder)
 
 
 class Test_NeuralNetworkDocumentProcessor:
     def test_process_document(self, mocker):
-        pipelineBuilder = mocker.Mock(spec=DocumentProcessorPipelineBuilder)
+        pipeline_builder = mocker.Mock(spec=DocumentProcessorPipelineBuilder)
         pipeline = mocker.Mock(spec=DocumentProcessorPipeline)
-        pipelineBuilder.build.return_value = pipeline
+        pipeline_builder.build.return_value = pipeline
 
-        processor = NeuralNetworkDocumentProcessor(pipelineBuilder)
+        processor = NeuralNetworkDocumentProcessor(pipeline_builder)
         document = b"PDF document contents"
         pipeline.processDocument.return_value = {
             "pdf_text": "Hello, there!",
