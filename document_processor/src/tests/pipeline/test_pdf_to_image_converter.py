@@ -10,13 +10,13 @@ from document_processor.pipeline.pdf_to_image_converter import (
 )
 
 
-class Test_PdfToImageConverter:
+class TestPdfToImageConverter:
     def test_PdfToImageConverter_not_implemented(self):
         with pytest.raises(TypeError):
             PdfToImageConverter().convert(pdf_bytes=b"")
 
 
-class Test_PdfToJpgConverter:
+class TestPdfToJpgConverter:
     @pytest.fixture
     def files_path(self):
         return "./src/tests/files/"

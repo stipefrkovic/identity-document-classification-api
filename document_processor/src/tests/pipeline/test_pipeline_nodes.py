@@ -11,13 +11,13 @@ from document_processor.pipeline.pipeline_nodes import (
 )
 
 
-class Test_DocumentProcessingNode:
+class TestDocumentProcessingNode:
     def test_processDocument_not_implemented(self):
         with pytest.raises(TypeError):
             DocumentProcessingNode().process_document(data={})
 
 
-class Test_PdfToImageConverterNode:
+class TestPdfToImageConverterNode:
     def test_pdf_to_jpg_conversion(self, mocker):
         pdf_bytes = b"test pdf bytes"
         jpg_bytes = b"test jpg bytes"
@@ -37,7 +37,7 @@ class Test_PdfToImageConverterNode:
         assert result["pdf_bytes"] == pdf_bytes
 
 
-class Test_NNDocumentIdentifierNode:
+class TestNNDocumentIdentifierNode:
     @pytest.fixture
     def node(self, mocker):
         mock_interpreter = mocker.Mock(spec=tf.lite.Interpreter)

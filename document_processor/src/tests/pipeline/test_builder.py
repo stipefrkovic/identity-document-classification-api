@@ -10,14 +10,14 @@ from document_processor.pipeline.pipeline_nodes import (
 )
 
 
-class Test_DocumentProcessorPipelineBuilder:
+class TestDocumentProcessorPipelineBuilder:
     def test_DocumentProcessorPipelineBuilder_not_implemented(self):
         with pytest.raises(TypeError):
             DocumentProcessorPipelineBuilder().build()
 
 
 # These tests might need refactoring if/when pipeline design gets changed.
-class Test_NeuralNetworkDocumentProcessorPipelineBuilder:
+class TestNeuralNetworkDocumentProcessorPipelineBuilder:
     def test_build_returns_pipeline_with_two_nodes(self):
         builder = NeuralNetworkDocumentProcessorPipelineBuilder()
         pipeline = builder.build()

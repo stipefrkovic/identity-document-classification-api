@@ -8,14 +8,14 @@ from document_processor.pipeline.builder import DocumentProcessorPipelineBuilder
 from document_processor.pipeline.pipeline import DocumentProcessorPipeline
 
 
-class Test_DocumentProcessor:
+class TestDocumentProcessor:
     def test_process_document_not_implemented(self, mocker):
         with pytest.raises(TypeError):
             pipeline_builder = mocker.Mock(spec=DocumentProcessorPipelineBuilder)
             DocumentProcessor().process_document(pipeline_builder)
 
 
-class Test_NeuralNetworkDocumentProcessor:
+class TestNeuralNetworkDocumentProcessor:
     def test_process_document(self, mocker):
         pipeline_builder = mocker.Mock(spec=DocumentProcessorPipelineBuilder)
         pipeline = mocker.Mock(spec=DocumentProcessorPipeline)
