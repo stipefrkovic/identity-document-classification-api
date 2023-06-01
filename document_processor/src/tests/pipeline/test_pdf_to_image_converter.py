@@ -21,49 +21,36 @@ class TestPdfToJpgConverter:
     def files_path(self):
         return "./src/tests/files/"
 
-    @pytest.fixture
-    def pdf_bytes_one_page(self):
-        # bytes of an empty pdf page
-        pdf_bytes = (
-            b"%PDF-1.7\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Count 1/Kids[3 0 "
-            b"R]>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 595 842]>>endobj\nxref\n0 4\n0000000000 65535 "
-            b"f\n0000000018 00000 n\n0000000063 00000 n\n0000000108 00000 n\ntrailer<</Size 4/Root 1 0 "
-            b"R>>startxref\n142\n%%EOF\n"
-        )
-        return pdf_bytes
+    @pytest.fixture(params=[1, 2])
+    def pdf_and_image_bytes(self, request):
+        if request.param == 1:
+            pdf_bytes = b"%PDF-1.7\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Count 1/Kids[3 0 " \
+                        b"R]>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 595 842]>>endobj\nxref\n0 4\n0000000000 65535 " \
+                        b"f\n0000000018 00000 n\n0000000063 00000 n\n0000000108 00000 n\ntrailer<</Size 4/Root 1 0 " \
+                        b"R>>startxref\n142\n%%EOF\n"
+        else:
+            pdf_bytes = b"%PDF-1.7\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R 4 0 " \
+                        b"R]/Count 2>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 595 842]>>endobj\n4 0 " \
+                        b"obj<</Type/Page/MediaBox[0 0 595 842]>>endobj\nxref\n0 5\n0000000000 65535 f\n0000000018 " \
+                        b"00000 n\n0000000062 00000 n\n0000000106 00000 n\n0000000150 00000 n\ntrailer<</Size 5/Root " \
+                        b"1 0 R>>startxref\n146\n%%EOF\n"
 
-    @pytest.fixture()
-    def pdf_bytes_multi_page(self):
-        # bytes of 2 empty pdf pages
-        pdf_bytes = (
-            b"%PDF-1.7\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R 4 0 "
-            b"R]/Count 2>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 595 842]>>endobj\n4 0 "
-            b"obj<</Type/Page/MediaBox[0 0 595 842]>>endobj\nxref\n0 5\n0000000000 65535 f\n0000000018 00000 "
-            b"n\n0000000062 00000 n\n0000000106 00000 n\n0000000150 00000 n\ntrailer<</Size 5/Root 1 0 "
-            b"R>>startxref\n146\n%%EOF\n"
-        )
-        return pdf_bytes
+        converter = PdfToJpgConverter()
+        image_bytes = converter.convert(pdf_bytes)
 
-    @pytest.fixture
-    def len_multipage(self):
-        return 2
+        return pdf_bytes, image_bytes, request.param
 
-    @pytest.fixture()
-    def converter(self):
-        return PdfToJpgConverter()
+    def test_convert_image_bytes_not_empty(self, pdf_and_image_bytes):
+        _, image_bytes, _ = pdf_and_image_bytes
+        assert len(image_bytes.getvalue()) > 0
 
-    def test_convert_results_in_BytesIO_one_page(self, pdf_bytes_one_page, converter):
-        result = converter.convert(pdf_bytes_one_page)
-        assert isinstance(result, io.BytesIO)
-
-    def test_convert_results_in_BytesIO_multi_page(
-        self, pdf_bytes_multi_page, len_multipage, converter
-    ):
-        image_bytes = converter.convert(pdf_bytes_multi_page)
+    def test_convert_results_in_BytesIO(self, pdf_and_image_bytes):
+        _, image_bytes, _ = pdf_and_image_bytes
         assert isinstance(image_bytes, io.BytesIO)
 
-    def test_convert_multi_page(self, pdf_bytes_multi_page, len_multipage, converter):
-        image_bytes = converter.convert(pdf_bytes_multi_page)
+    def test_convert_multi_page(self, pdf_and_image_bytes):
+        _, image_bytes, len_multipage = pdf_and_image_bytes
+
         page_sizes = []
         for i in range(len_multipage):
             bytes_offset = i * Image.open(image_bytes).tell()
@@ -72,12 +59,12 @@ class TestPdfToJpgConverter:
                     page_sizes.append(img.size)
         assert len(page_sizes) == len_multipage
 
-    def test_convert_out_format_JPEG(self, pdf_bytes_one_page, converter):
-        result = converter.convert(pdf_bytes_one_page)
-        img = Image.open(result)
+    def test_convert_out_format_JPEG(self, pdf_and_image_bytes):
+        _, image_bytes, _ = pdf_and_image_bytes
+        img = Image.open(image_bytes)
         assert img.format == "JPEG"
 
-    def test_convert_invalid_pdf_throws_exception(self, converter):
+    def test_convert_invalid_pdf_throws_exception(self):
         empty_pdf_bytes = b""
         with pytest.raises(p2i.exceptions.PDFPageCountError):
-            converter.convert(empty_pdf_bytes)
+            PdfToJpgConverter().convert(empty_pdf_bytes)

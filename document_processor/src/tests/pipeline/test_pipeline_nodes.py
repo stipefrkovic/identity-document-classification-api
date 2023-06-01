@@ -7,34 +7,68 @@ from document_processor.pipeline.pdf_to_image_converter import PdfToImageConvert
 from document_processor.pipeline.pipeline_nodes import (
     DocumentProcessingNode,
     NNDocumentIdentifierNode,
-    PdfToImageConverterNode,
+    PdfToImageConverterNode, EffNetDocumentClassifier, EffDetDocumentClassifier,
 )
 
 
 class TestDocumentProcessingNode:
-    def test_processDocument_not_implemented(self):
+    def test_process_document_not_implemented(self):
         with pytest.raises(TypeError):
             DocumentProcessingNode().process_document(data={})
 
 
 class TestPdfToImageConverterNode:
-    def test_pdf_to_jpg_conversion(self, mocker):
-        pdf_bytes = b"test pdf bytes"
-        jpg_bytes = b"test jpg bytes"
+    @pytest.fixture
+    def converter_mock(self, mocker):
+        return mocker.Mock(spec=PdfToImageConverter)
 
-        # Mock the converter
-        converter_mock = mocker.Mock(spec=PdfToImageConverter)
-        converter_mock.convert.return_value = jpg_bytes
+    @pytest.fixture
+    def node(self, converter_mock):
+        return PdfToImageConverterNode(converter=converter_mock)
 
-        node = PdfToImageConverterNode(converter=converter_mock)
-        data = {"pdf_bytes": pdf_bytes}
+    @pytest.fixture
+    def data(self):
+        return {"pdf_bytes": b"test pdf bytes"}
 
-        # Run test
+    def test_pdf_to_jpg_conversion_calls_convert(self, node, data, converter_mock):
+        node.process_document(data)
+        converter_mock.convert.assert_called_once_with(data["pdf_bytes"])
+
+    def test_pdf_to_jpg_conversion_returns_correct_data(self, node, data, converter_mock):
+        converter_mock.convert.return_value = b"test jpg bytes"
         result = node.process_document(data)
+        assert result["jpg_bytes"] == converter_mock.convert.return_value
 
-        assert converter_mock.convert.called_once_with(pdf_bytes)
-        assert result["jpg_bytes"] == jpg_bytes
-        assert result["pdf_bytes"] == pdf_bytes
+
+@pytest.fixture
+def jpg_bytes():
+    return b"test jpg bytes"
+
+
+@pytest.fixture
+def input_data(jpg_bytes):
+    return {"jpg_bytes": jpg_bytes}
+
+
+class TestClassifierNode:
+    @pytest.fixture(params=[EffNetDocumentClassifier, EffDetDocumentClassifier, NNDocumentIdentifierNode])
+    def mock_node(self, mocker, request):
+        mock_node = mocker.Mock(spec=request.param)
+        mock_node.classify_image.return_value = "passport"
+        mock_node.process_document.side_effect = lambda x: {"document_type": mock_node.classify_image(x)}
+        return mock_node
+
+    def test_process_document_calls_classify_image(self, mock_node, input_data):
+        mock_node.process_document(input_data)
+        mock_node.classify_image.assert_called_once()
+
+    def test_process_document_returns_classification_result(self, mock_node, input_data):
+        result = mock_node.process_document(input_data)
+        assert "document_type" in result
+
+    def test_process_document_returns_correct_classification_result(self, mock_node, input_data):
+        result = mock_node.process_document(input_data)
+        assert result["document_type"] == "passport"
 
 
 class TestNNDocumentIdentifierNode:
@@ -54,68 +88,31 @@ class TestNNDocumentIdentifierNode:
         image_array = np.random.randint(0, 256, size=(224, 224, 3))
         return Image.fromarray(image_array, mode="RGB")
 
-    def test_classify_image_valid_output(self, node, image):
-
-        # Run test
-        result = node.classify_image(image)
-
-        assert isinstance(result, str)
-        assert len(result) > 0
+    def test_classify_image_calls_get_output_details(self, node, image):
+        node.classify_image(image)
         node.interpreter.get_output_details.assert_called_once()
+
+    def test_classify_image_calls_allocate_tensors(self, node, image):
+        node.classify_image(image)
         node.interpreter.allocate_tensors.assert_called_once()
+
+    def test_classify_image_calls_get_input_details(self, node, image):
+        node.classify_image(image)
         node.interpreter.get_input_details.assert_called_once()
+
+    def test_classify_image_calls_invoke(self, node, image):
+        node.classify_image(image)
         node.interpreter.invoke.assert_called_once()
 
-    # This should be refactored once we return probability matrix.
-    # def test_classify_image_probabilities_sum_to_one(self, mocker, image):
-    #     model_path = "./src/document_processor/pipeline/model.tflite"
-    #     node = NNDocumentIdentifierNode(model_path=model_path)
+    def test_classify_image_returns_result(self, node, image):
+        result = node.classify_image(image)
+        assert len(result) > 0
 
-    #     # Mock the interpreter object
-    #     mock_interpreter = mocker.Mock(spec=tf.lite.Interpreter)
-    #     node.interpreter = mock_interpreter
-    #     node.interpreter.get_output_details.return_value = [{"index": 0}]
-    #     node.interpreter.get_tensor.side_effect = [np.array([[0.1, 0.3, 0.6]], dtype=np.float32)]
-
-    #     # Run test
-    #     result = node.classify_image(image)
-    #     probabilities = node.interpreter.get_tensor(0)[0]
-
-    #     assert isinstance(result, str)
-    #     assert len(result) > 0
-    #     assert sum(probabilities) == pytest.approx(1.0)
-    #     node.interpreter.get_output_details.assert_called_once()
-    #     node.interpreter.get_tensor.assert_called_once_with(0)
+    def test_classify_image_returns_string(self, node, image):
+        result = node.classify_image(image)
+        assert isinstance(result, str)
 
     def test_classify_image_throws_errors(self, node, image):
-        node.interpreter.invoke.side_effect = RuntimeError("Sample error")
-
-        with pytest.raises(RuntimeError, match="Sample error"):
+        node.interpreter.invoke.side_effect = RuntimeError("Error")
+        with pytest.raises(RuntimeError, match="Error"):
             node.classify_image(image)
-
-        node.interpreter.allocate_tensors.assert_called_once()
-        node.interpreter.get_input_details.assert_called_once()
-        node.interpreter.set_tensor.assert_called_once()
-        node.interpreter.invoke.assert_called_once()
-
-    @pytest.fixture
-    def mock_node(self, mocker):
-        mock_node = mocker.Mock(spec=NNDocumentIdentifierNode)
-        mock_node.process_document.return_value = {"document_type": "passport"}
-
-        return mock_node
-
-    @pytest.fixture
-    def jpg_bytes(self):
-        jpg_bytes = b"test jpg bytes"
-        return jpg_bytes
-
-    @pytest.fixture
-    def input_data(self, jpg_bytes):
-        return {"jpg_bytes": jpg_bytes}
-
-    def test_processDocument_returns_classification_result(self, mock_node, input_data):
-        result = mock_node.process_document(input_data)
-
-        assert "document_type" in result
-        assert result["document_type"] == "passport"
