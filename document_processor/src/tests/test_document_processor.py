@@ -16,7 +16,8 @@ class TestDocumentProcessor:
 
 
 class TestNeuralNetworkDocumentProcessor:
-    def test_process_document(self, mocker):
+    @pytest.fixture
+    def processor_and_pipeline(self, mocker):
         pipeline_builder = mocker.Mock(spec=DocumentProcessorPipelineBuilder)
         pipeline = mocker.Mock(spec=DocumentProcessorPipeline)
         pipeline_builder.build.return_value = pipeline
@@ -28,10 +29,21 @@ class TestNeuralNetworkDocumentProcessor:
             "processed": True,
         }
 
-        result = processor.process_document(document)
+        return processor, pipeline, document
 
+    def test_process_document_returns_expected_result(self, processor_and_pipeline):
+        processor, _, document = processor_and_pipeline
+        result = processor.process_document(document)
         assert result == {"pdf_text": "Hello, there!", "processed": True}
+
+    def test_process_document_calls_pipeline_once(self, processor_and_pipeline):
+        processor, pipeline, document = processor_and_pipeline
+        processor.process_document(document)
         assert pipeline.process_document.call_count == 1
+
+    def test_process_document_calls_pipeline_with_correct_args(self, processor_and_pipeline, mocker):
+        processor, pipeline, document = processor_and_pipeline
+        processor.process_document(document)
         assert pipeline.process_document.call_args == mocker.call(
             {"pdf_bytes": document}
         )
