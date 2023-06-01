@@ -6,7 +6,7 @@ client = TestClient(app)
 DOC_DIR = "/document/"
 
 
-class Test_Main:
+class TestMain:
     def test_main(self):
         response = client.get("/")
         assert response.json() == {"message": "Test"}

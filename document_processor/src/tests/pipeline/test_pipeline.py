@@ -4,7 +4,7 @@ from document_processor.pipeline.pipeline import DocumentProcessorPipeline
 from document_processor.pipeline.pipeline_nodes import DocumentProcessingNode
 
 
-class Test_DocumentProcessorPipeline:
+class TestDocumentProcessorPipeline:
     @pytest.fixture
     def pipeline(self):
         return DocumentProcessorPipeline()
