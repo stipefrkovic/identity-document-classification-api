@@ -32,15 +32,15 @@ class TestDocumentProcessorPipelineBuilder:
          "./src/document_processor/pipeline/models/effnet"),
         (EffDetDocumentProcessorPipelineBuilder, EffDetDocumentClassifier,
          "./src/document_processor/pipeline/models/effdet")
-    ])
+    ], scope="class")
     def builder_info(self, request):
         return request.param
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def builder(self, builder_info):
         return builder_info[0]()
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def pipeline(self, builder):
         return builder.build()
 
