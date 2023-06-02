@@ -15,7 +15,7 @@ class DocumentProcessor(ABC):
         pass
 
 
-class MLDocumentProcessor(DocumentProcessor):
+class MLModelDocumentProcessor(DocumentProcessor):
     def __init__(self, pipelineBuilder: DocumentProcessorPipelineBuilder):
         super().__init__(pipelineBuilder)
 

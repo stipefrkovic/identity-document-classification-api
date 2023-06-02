@@ -1,7 +1,7 @@
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from pydantic import BaseModel
 
-from document_processor.document_processor import MLDocumentProcessor
+from document_processor.document_processor import MLModelDocumentProcessor
 from document_processor.pipeline.builder import (
     EffNetDocumentProcessorPipelineBuilder,
     EffDetDocumentProcessorPipelineBuilder
@@ -10,7 +10,7 @@ from document_processor.pipeline.builder import (
 app = FastAPI()
 
 pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
-document_processor = MLDocumentProcessor(pipeline_builder)
+document_processor = MLModelDocumentProcessor(pipeline_builder)
 
 
 @app.get("/")
