@@ -14,8 +14,8 @@ class DocumentProcessor(ABC):
     def process_document(self, document):
         pass
 
-# TODO refractor
-class NeuralNetworkDocumentProcessor(DocumentProcessor):
+
+class MLDocumentProcessor(DocumentProcessor):
     def __init__(self, pipelineBuilder: DocumentProcessorPipelineBuilder):
         super().__init__(pipelineBuilder)
 

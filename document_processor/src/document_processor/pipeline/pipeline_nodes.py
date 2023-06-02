@@ -23,21 +23,33 @@ class PdfToImageConverterNode(DocumentProcessingNode):
         return data
 
 
-# TODO add superclass for both models
-
-
-class EffNetDocumentClassifier(DocumentProcessingNode):
-    # TODO put somewhere else
+class MLModelDocumentClassifierNode(DocumentProcessingNode):
     document_classes = ["driving_license", "id_card", "passport"]
-
+    
     def __init__(self, model_path):
         self.model = self.load_model(model_path)
 
+    @abstractmethod
+    def load_model(self, model_path):
+        pass
+
+    @abstractmethod
+    def classify_image(self, image):
+        pass
+
+    def process_document(self, data: dict):
+        jpg_bytes = data["jpg_bytes"]
+        pil_image = Image.open(jpg_bytes)
+        classification_result = self.classify_image(pil_image)
+        data["document_type"] = classification_result
+        return data
+
+
+class EffNetDocumentClassifierNode(MLModelDocumentClassifierNode):
     def load_model(self, model_path):
         return tf.keras.models.load_model(model_path)
 
     def classify_image(self, image):
-        # TODO add if
         image = image.resize((224, 224))
         # Convert the image into an array
         img_array = tf.keras.utils.img_to_array(image)
@@ -45,28 +57,15 @@ class EffNetDocumentClassifier(DocumentProcessingNode):
         img_batch = tf.expand_dims(img_array, 0)
         # Get model predictions
         predictions = self.model.predict(img_batch)
-        # Get highest prediction
+        # Get the highest prediction
         prediction = np.argmax(predictions[0])
         # Get predicted clas
         predicted_class = self.document_classes[prediction]
 
         return predicted_class
 
-    def process_document(self, data: dict):
-        # TODO check that data dict has this element
-        jpg_bytes = data["jpg_bytes"]
-        pil_image = Image.open(jpg_bytes)
-        classification_result = self.classify_image(pil_image)
-        data["document_type"] = classification_result
-        return data
 
-class EffDetDocumentClassifier(DocumentProcessingNode):
-    # TODO put somewhere else
-    document_classes = ["driving_license", "id_card", "passport"]
-
-    def __init__(self, model_path):
-        self.model = self.load_model(model_path)
-
+class EffDetDocumentClassifierNode(MLModelDocumentClassifierNode):
     def load_model(self, model_path):
         return tf.saved_model.load(model_path)
 
@@ -82,52 +81,3 @@ class EffDetDocumentClassifier(DocumentProcessingNode):
         highest_class = self.document_classes[highest_class_index - 1]
         return highest_class
 
-    def process_document(self, data: dict):
-        jpg_bytes = data["jpg_bytes"]
-        pil_image = Image.open(jpg_bytes)
-        highest_class = self.classify_image(pil_image)
-        # Do something with the highest class and confidence
-        data["document_type"] = highest_class
-        return data
-
-class NNDocumentIdentifierNode(DocumentProcessingNode):
-    # TODO put somewhere else
-    document_classes = ["driving_license", "id_card", "passport"]
-
-    def __init__(self, interpreter: tf.lite.Interpreter):
-        self.interpreter = interpreter
-        self.interpreter.allocate_tensors()
-
-    def classify_image(self, image):
-
-        image = image.resize((224, 224))
-
-        # Convert the image to a numpy array
-        input_data = np.asarray(image)
-        input_data = np.array(input_data, dtype=np.uint8)
-
-        # Add a batch dimension
-        input_data = np.expand_dims(input_data, axis=0)
-
-        # Set the input tensor to the input data
-        self.interpreter.set_tensor(
-            self.interpreter.get_input_details()[0]["index"], input_data
-        )
-
-        # Invoke the interpreter
-        self.interpreter.invoke()
-
-        # Get the output predicted class
-        output_details = self.interpreter.get_output_details()[0]
-        output_data = self.interpreter.get_tensor(output_details["index"])
-
-        predicted_class = np.argmax(output_data[0])
-        return self.document_classes[predicted_class]
-
-    def process_document(self, data: dict):
-        jpg_bytes = data["jpg_bytes"]
-
-        pil_image = Image.open(jpg_bytes)
-        classification_result = self.classify_image(pil_image)
-        data["document_type"] = classification_result
-        return data
