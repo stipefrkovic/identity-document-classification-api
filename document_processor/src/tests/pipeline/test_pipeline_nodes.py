@@ -1,13 +1,11 @@
-import numpy as np
 import pytest
-import tensorflow as tf
-from PIL import Image
 
 from document_processor.pipeline.pdf_to_image_converter import PdfToImageConverter
 from document_processor.pipeline.pipeline_nodes import (
     DocumentProcessingNode,
-    NNDocumentIdentifierNode,
-    PdfToImageConverterNode, EffNetDocumentClassifierNode, EffDetDocumentClassifierNode,
+    PdfToImageConverterNode,
+    EffNetDocumentClassifierNode,
+    EffDetDocumentClassifierNode,
 )
 
 

@@ -15,7 +15,7 @@ from document_processor.pipeline.pipeline import (
 )
 
 
-class TestDocumentProcessorPipelineBuilder:
+class TestDocumentProcessorPipelineBuilderAbstract:
     def test_document_processor_pipeline_builder_not_implemented(self):
         with pytest.raises(TypeError):
             DocumentProcessorPipelineBuilder().build()
