@@ -5,7 +5,7 @@ from document_processor.pipeline.pipeline_nodes import (
     DocumentProcessingNode,
     PdfToImageConverterNode,
     EffNetDocumentClassifierNode,
-    EffDetDocumentClassifierNode,
+    EffDetDocumentClassifierNode, MLModelDocumentClassifierNode,
 )
 
 
@@ -54,7 +54,7 @@ class TestDocumentClassifierNode:
     def res_document_type(self):
         return "passport"
 
-    @pytest.fixture(params=[EffNetDocumentClassifierNode, EffDetDocumentClassifierNode])
+    @pytest.fixture(params=[EffNetDocumentClassifierNode, EffDetDocumentClassifierNode, MLModelDocumentClassifierNode])
     def mock_node(self, mocker, request, res_document_type):
         mock_node = mocker.Mock(spec=request.param)
         mock_node.classify_image.return_value = res_document_type
