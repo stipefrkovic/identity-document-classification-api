@@ -14,8 +14,6 @@ COPY ./requirements.txt /requirements.txt
 
 RUN pip install -r /requirements.txt
 
-# COPY ./run_linters.sh /run_linters.sh
-# COPY ./.flake8 /.flake8
 COPY generate_unit_tests_report.sh /generate_unit_tests_report.sh
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${port:-8000}", "--app-dir", "./app/src/", "--reload" ]
