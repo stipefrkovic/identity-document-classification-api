@@ -15,11 +15,14 @@ class TestDocumentProcessorPipeline:
         node2 = mocker.Mock(DocumentProcessingNode)
         return node1, node2
 
+    @pytest.fixture
+    def data(self):
+        return {"text": "Hello world!"}
+
     def test_initial_pipeline_is_empty(self, pipeline):
         assert not pipeline.processing_nodes
 
-    def test_process_document_no_processing_for_empty_pipeline(self, pipeline):
-        data = {"text": "Hello world!"}
+    def test_process_document_no_processing_for_empty_pipeline(self, pipeline, data):
         result = pipeline.process_document(data)
         assert result == data
 
@@ -27,11 +30,10 @@ class TestDocumentProcessorPipeline:
         pipeline.add_processing_node(nodes[0])
         assert nodes[0] in pipeline.processing_nodes
 
-    def test_process_document(self, pipeline, nodes):
+    def test_process_document(self, pipeline, nodes, data):
         for node in nodes:
             pipeline.add_processing_node(node)
 
-        data = {"text": "Hello world!"}
         expected_res_data = {"text": "Better Hello world!"}
 
         for node in nodes:
@@ -44,13 +46,11 @@ class TestDocumentProcessorPipeline:
 
         assert result["text"] == expected_res_data["text"]
 
-    def test_process_document_handles_node_errors(self, pipeline, nodes):
+    def test_process_document_handles_node_errors(self, pipeline, nodes, data):
         pipeline.add_processing_node(nodes[0])
 
         error_message = "An error occurred during processing"
         nodes[0].process_document.side_effect = Exception(error_message)
-
-        data = {"text": "Hello world!"}
 
         with pytest.raises(Exception, match=error_message):
             pipeline.process_document(data)

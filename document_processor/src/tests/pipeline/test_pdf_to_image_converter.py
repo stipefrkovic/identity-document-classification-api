@@ -11,7 +11,7 @@ from document_processor.pipeline.pdf_to_image_converter import (
 
 
 class TestPdfToImageConverter:
-    def test_PdfToImageConverter_not_implemented(self):
+    def test_pdf_to_image_converter_not_implemented(self):
         with pytest.raises(TypeError):
             PdfToImageConverter().convert(pdf_bytes=b"")
 

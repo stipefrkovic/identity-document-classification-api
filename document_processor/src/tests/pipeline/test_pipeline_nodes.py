@@ -49,10 +49,15 @@ def input_data(jpg_bytes):
 
 
 class TestDocumentClassifierNode:
+
+    @pytest.fixture
+    def res_document_type(self):
+        return "passport"
+
     @pytest.fixture(params=[EffNetDocumentClassifierNode, EffDetDocumentClassifierNode])
-    def mock_node(self, mocker, request):
+    def mock_node(self, mocker, request, res_document_type):
         mock_node = mocker.Mock(spec=request.param)
-        mock_node.classify_image.return_value = "passport"
+        mock_node.classify_image.return_value = res_document_type
         mock_node.process_document.side_effect = lambda x: {"document_type": mock_node.classify_image(x)}
         return mock_node
 
@@ -64,7 +69,7 @@ class TestDocumentClassifierNode:
         result = mock_node.process_document(input_data)
         assert "document_type" in result
 
-    def test_process_document_returns_correct_classification_result(self, mock_node, input_data):
+    def test_process_document_returns_correct_classification_result(self, mock_node, input_data, res_document_type):
         result = mock_node.process_document(input_data)
-        assert result["document_type"] == "passport"
+        assert result["document_type"] == res_document_type
 
