@@ -44,7 +44,7 @@ class TestPdfToJpgConverter:
         _, image_bytes, _ = pdf_and_image_bytes
         assert len(image_bytes.getvalue()) > 0
 
-    def test_convert_results_in_BytesIO(self, pdf_and_image_bytes):
+    def test_convert_results_in_bytes_io(self, pdf_and_image_bytes):
         _, image_bytes, _ = pdf_and_image_bytes
         assert isinstance(image_bytes, io.BytesIO)
 
@@ -59,7 +59,7 @@ class TestPdfToJpgConverter:
                     page_sizes.append(img.size)
         assert len(page_sizes) == len_multipage
 
-    def test_convert_out_format_JPEG(self, pdf_and_image_bytes):
+    def test_convert_out_format_jpeg(self, pdf_and_image_bytes):
         _, image_bytes, _ = pdf_and_image_bytes
         img = Image.open(image_bytes)
         assert img.format == "JPEG"
