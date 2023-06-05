@@ -7,6 +7,7 @@ services:
     command: uvicorn main:app --app-dir ./src/ --host 0.0.0.0 --port ${port:-8000} --reload
     volumes:
       - ./document_processor/:/app
+      - ./models/:/app/src/document_processor/pipeline/models/
     ports:
       - ${port:-8000}:${port:-8000}
     env_file: .env
