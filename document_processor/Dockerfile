@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.9-slim
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN apt-get update && \
 
 COPY ./requirements.txt /requirements.txt
 
-RUN pip install -r /requirements.txt
+RUN pip install --no-cache-dir -r /requirements.txt
 
 COPY generate_unit_tests_report.sh /generate_unit_tests_report.sh
 

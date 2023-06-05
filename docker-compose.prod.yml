@@ -3,6 +3,7 @@ version: '3.7'
 services:
   app:
     container_name: document-processor-prod
+    image: andrewrutherfoord/ing_identity_document_classifier:latest
     build:
       context: ./document_processor
       dockerfile: Dockerfile.prod
