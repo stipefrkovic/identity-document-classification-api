@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from pydantic import BaseModel
 
-from document_processor.document_processor import MLModelDocumentProcessor
+from document_processor.document_processor import PDFDocumentProcessor
 from document_processor.pipeline.builder import (
     EffNetDocumentProcessorPipelineBuilder,
     EffDetDocumentProcessorPipelineBuilder,
@@ -18,7 +18,7 @@ if model == "EFFICIENTNET":
 elif model == "EFFICIENTDET":
     pipeline_builder = EffDetDocumentProcessorPipelineBuilder()
 
-document_processor = MLModelDocumentProcessor(pipeline_builder)
+document_processor = PDFDocumentProcessor(pipeline_builder)
 
 
 @app.get("/")

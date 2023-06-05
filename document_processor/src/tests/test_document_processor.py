@@ -2,7 +2,7 @@ import pytest
 
 from document_processor.document_processor import (
     DocumentProcessor,
-    MLModelDocumentProcessor,
+    PDFDocumentProcessor,
 )
 from document_processor.pipeline.builder import DocumentProcessorPipelineBuilder
 from document_processor.pipeline.pipeline import DocumentProcessorPipeline
@@ -27,7 +27,7 @@ class TestNeuralNetworkDocumentProcessor:
         pipeline = mocker.Mock(spec=DocumentProcessorPipeline)
         pipeline_builder.build.return_value = pipeline
 
-        processor = MLModelDocumentProcessor(pipeline_builder)
+        processor = PDFDocumentProcessor(pipeline_builder)
         document = b"PDF document contents"
         pipeline.process_document.return_value = {
             "pdf_text": pdf_text,
