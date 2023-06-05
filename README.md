@@ -4,11 +4,16 @@ This is the production repository for the course Software Engineering. This API 
 
 ## Table of Contents
 
-* [1. Tech Stack](#1-tech-stack)
-* [2. API Reference](#2-api-reference)
-* [3. Run in Docker Compose - Development Mode](#3-run-in-docker-compose---development-mode)
-* [4. Run in Docker Compose - Production Mode](#4-run-in-docker-compose---production-mode)
-* [5. Project CI](#5-project-ci)
+- [1. Tech Stack](#1-tech-stack)
+  - [Production](#production)
+  - [Development](#development)
+- [2. API Reference](#2-api-reference)
+  - [POST Identity document](#post-identity-document)
+- [3. Adding the trained model](#3-adding-the-trained-model)
+- [4. Run in Docker Compose - Development Mode](#4-run-in-docker-compose---development-mode)
+- [5. Run in Docker Compose - Production Mode](#5-run-in-docker-compose---production-mode)
+- [6. Project CI](#6-project-ci)
+  - [Unit Tests Report](#unit-tests-report)
 
 ## 1. Tech Stack
 
@@ -36,9 +41,21 @@ This project is used using the an API.
 
 | Parameter  | Type   | Description                              |
 | :--------- | :----- | :--------------------------------------- |
-| `document` | `file` | **Required**. Identity document to be classified |
+| `document` | `file` | **Required**. PDF Identity document to be classified |
 
-## 3. Run in Docker Compose - Development Mode
+## 3. Adding the trained model
+
+Inside the `ing-nn-trainer` application, there is a directory called `model_export` which contains the trained model. This model needs to be copied into a directory called `models` in the root directory of this project.
+
+First create the `models` directory:
+
+```terminal
+mkdir models
+```
+
+Then copy all of the contents of the `model_export` directory into the `models` directory in this project.
+
+## 4. Run in Docker Compose - Development Mode
 
 This mode runs the FastAPI app with hot reload enabled so any changes made to the code will be reflected in the docker container.
 
@@ -73,7 +90,7 @@ Run tests:
 docker-compose exec app pytest
 ```
 
-## 4. Run in Docker Compose - Production Mode
+## 5. Run in Docker Compose - Production Mode
 
 This mode runs the fast api app with hot reload disabled.
 
@@ -102,15 +119,16 @@ View the logs in follow mode:
 docker-compose -f docker-compose.prod.yml logs -f
 ```
 
-## 5. Project CI
+## 6. Project CI
 
 This project uses GitLab CI to ensure code quality.
 
 The pipeline builds the docker image, and runs code style checks and then runs tests.
 
-
 ### Unit Tests Report
+
 To generate a unit tests report for sonarqube, run the following command:
+
 ```terminal
 docker-compose exec app /bin/bash generate_unit_tests_report.sh
 ```
