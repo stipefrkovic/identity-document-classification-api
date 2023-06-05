@@ -1,15 +1,23 @@
+import os
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from pydantic import BaseModel
 
 from document_processor.document_processor import MLModelDocumentProcessor
 from document_processor.pipeline.builder import (
     EffNetDocumentProcessorPipelineBuilder,
-    EffDetDocumentProcessorPipelineBuilder
+    EffDetDocumentProcessorPipelineBuilder,
 )
 
 app = FastAPI()
 
-pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
+# Model to use is loaded from environment variable
+model = os.getenv("MODEL")
+
+if model == "EFFICIENTNET":
+    pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
+elif model == "EFFICIENTDET":
+    pipeline_builder = EffDetDocumentProcessorPipelineBuilder()
+
 document_processor = MLModelDocumentProcessor(pipeline_builder)
 
 
@@ -24,9 +32,7 @@ class DocumentTypeResponse(BaseModel):
 
 
 def check_document(document: File):
-    if document.content_type == "application/pdf":
-        return True
-    return False
+    return document.content_type == "application/pdf"
 
 
 @app.post("/document/")
@@ -43,7 +49,10 @@ async def process_document(document: UploadFile):
     if data.get("document_type", None) is not None:
         return {
             "document_type": data.get("document_type"),
-            "meta": {"filename": document.filename},
+            "meta": {
+                "filename": document.filename,
+                "prediction_confidences": data.get("prediction_confidences", None),
+            },
         }
     else:
         return {"document_type": "unknown", "meta": {"filename": document.filename}}
