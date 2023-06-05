@@ -57,6 +57,8 @@ Then copy all of the contents of the `model_export` directory into the `models` 
 
 ## 4. Run in Docker Compose - Development Mode
 
+**ING Employees please use production mode**
+
 This mode runs the FastAPI app with hot reload enabled so any changes made to the code will be reflected in the docker container.
 
 Create the env file from `.env.example`:
@@ -68,14 +70,8 @@ cp .\.env.example .\.env
 Build the docker compose and then run it:
 
 ```terminal
-docker-compose build
+docker-compose pull
 docker-compose up -d
-```
-
-Or do that in one command:
-
-```terminal
-docker-compose up -d --build
 ```
 
 View the logs in follow mode:
