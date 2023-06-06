@@ -14,13 +14,7 @@ app = FastAPI()
 model = os.getenv("MODEL")
 
 # read min confidence from environment variable as int
-
-min_confidence = os.getenv("MIN_CONFIDENCE")
-
-if min_confidence is None:
-    min_confidence = 0.5
-else:
-    min_confidence = float(min_confidence)
+min_confidence = float(os.getenv("MIN_CONFIDENCE", 0.5))
 
 if model == "EFFICIENTNET":
     pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
