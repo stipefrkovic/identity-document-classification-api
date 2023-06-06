@@ -2,7 +2,7 @@
 # For sonarqube to get the unit test coverage report.
 
 # Run the tests and generate reports
-pytest --cov --cov-config=.coveragerc --cov-report xml:reports/coverage.xml --junitxml=reports/pytest.xml
+pytest -v --cov --cov-config=.coveragerc --cov-report xml:reports/coverage.xml --junitxml=reports/pytest.xml
 
 # Save the pytest exit code
 PYTEST_EXIT_CODE=$?
