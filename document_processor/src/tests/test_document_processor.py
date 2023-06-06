@@ -12,7 +12,8 @@ class TestDocumentProcessor:
     def test_process_document_not_implemented(self, mocker):
         with pytest.raises(TypeError):
             pipeline_builder = mocker.Mock(spec=DocumentProcessorPipelineBuilder)
-            DocumentProcessor().process_document(pipeline_builder)
+            mock_document = mocker.MagicMock()
+            DocumentProcessor(pipeline_builder).process_document(mock_document)
 
 
 class TestNeuralNetworkDocumentProcessor:
@@ -27,7 +28,7 @@ class TestNeuralNetworkDocumentProcessor:
         pipeline = mocker.Mock(spec=DocumentProcessorPipeline)
         pipeline_builder.build.return_value = pipeline
 
-        processor = PDFDocumentProcessor(pipeline_builder, 0.5)
+        processor = PDFDocumentProcessor(pipeline_builder, min_confidence=0.5)
         document = b"PDF document contents"
         pipeline.process_document.return_value = {
             "pdf_text": pdf_text,

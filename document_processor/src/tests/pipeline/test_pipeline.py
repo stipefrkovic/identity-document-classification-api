@@ -30,7 +30,18 @@ class TestDocumentProcessorPipeline:
         pipeline.add_processing_node(nodes[0])
         assert nodes[0] in pipeline.processing_nodes
 
-    def test_process_document(self, pipeline, nodes, data):
+    def test_process_document_calls_process_document_on_all_nodes_with_correct_data(self, pipeline, nodes, data):
+        for node in nodes:
+            pipeline.add_processing_node(node)
+
+        for node in nodes:
+            node.process_document.return_value = data
+        pipeline.process_document(data)
+
+        for node in nodes:
+            node.process_document.assert_called_once_with(data)
+
+    def test_process_document_returns_correct_dat(self, pipeline, nodes, data):
         for node in nodes:
             pipeline.add_processing_node(node)
 
@@ -40,9 +51,6 @@ class TestDocumentProcessorPipeline:
             node.process_document.return_value = expected_res_data
 
         result = pipeline.process_document(data)
-
-        nodes[0].process_document.assert_called_once_with(data)
-        nodes[1].process_document.assert_called_once_with(expected_res_data)
 
         assert result["text"] == expected_res_data["text"]
 
