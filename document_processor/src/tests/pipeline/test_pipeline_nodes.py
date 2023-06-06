@@ -89,7 +89,7 @@ class DummyDocumentClassifierNode(MLModelDocumentClassifierNode):
     def load_model(self, model_path, min_confidence):
         pass
 
-    def classify_image(self, image, min_confidence):
+    def classify_image(self, image):
         return "passport", np.array([[0.1, 0.1, 0.8]])
 
 
