@@ -92,12 +92,12 @@ class DummyDocumentClassifierNode(MLModelDocumentClassifierNode):
 
 class TestMLModelDocumentClassifierNode:
     @pytest.fixture
-    def dummy_node(self, model_path):
-        return DummyDocumentClassifierNode(model_path, 0.5)
+    def dummy_node(self, model_path, min_confidence):
+        return DummyDocumentClassifierNode(model_path, min_confidence)
 
-    def test_init_calls_load_model(self, mocker, model_path):
+    def test_init_calls_load_model(self, mocker, model_path, min_confidence):
         mock_load_model = mocker.patch.object(DummyDocumentClassifierNode, 'load_model', autospec=True)
-        DummyDocumentClassifierNode(model_path, 0.5)
+        DummyDocumentClassifierNode(model_path, min_confidence)
         assert mock_load_model.called
 
     def test_process_document_calls_image_open(self, mocker, input_data, dummy_node, mock_image):
