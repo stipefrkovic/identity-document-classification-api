@@ -70,11 +70,11 @@ class EffNetDocumentClassifierNode(MLModelDocumentClassifierNode):
 
         # Get the highest prediction
         prediction = np.argmax(predictions[0])
-        # Get predicted class
-        predicted_class = self.document_classes[prediction]
-
         if predictions[0][prediction] < self.min_confidence:
             return None, None
+
+        # Get predicted class
+        predicted_class = self.document_classes[prediction]
 
         return predicted_class, prediction_confidences
 

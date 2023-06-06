@@ -24,6 +24,9 @@ class EffNetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
         pdf_2_image_node = PdfToImageConverterNode(PdfToJpgConverter())
         pipeline.add_processing_node(pdf_2_image_node)
 
+        if (kwargs.get("min_confidence") is None):
+            raise ValueError("min_confidence must be set for EfficientNet model")
+
         eff_net_node = EffNetDocumentClassifierNode(
             "./src/document_processor/pipeline/models/effnet",
             kwargs.get("min_confidence"),
@@ -40,10 +43,13 @@ class EffDetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
         pdf_2_image_node = PdfToImageConverterNode(PdfToJpgConverter())
         pipeline.add_processing_node(pdf_2_image_node)
 
-        eff_net_node = EffDetDocumentClassifierNode(
+        if (kwargs.get("min_confidence") is None):
+            raise ValueError("min_confidence must be set for EfficientDet model")
+
+        eff_det_node = EffDetDocumentClassifierNode(
             "./src/document_processor/pipeline/models/effdet/saved_model/saved_model",
             kwargs.get("min_confidence"),
         )
-        pipeline.add_processing_node(eff_net_node)
+        pipeline.add_processing_node(eff_det_node)
 
         return pipeline

@@ -16,8 +16,8 @@ class DocumentProcessor(ABC):
 
 
 class PDFDocumentProcessor(DocumentProcessor):
-    def __init__(self, pipeline_builder: DocumentProcessorPipelineBuilder, min_confidence=0.5):
-        super().__init__(pipeline_builder, min_confidence=min_confidence)
+    def __init__(self, pipeline_builder: DocumentProcessorPipelineBuilder, **kwargs):
+        super().__init__(pipeline_builder, **kwargs)
 
     def process_document(self, document):
         data = {"pdf_bytes": document}
