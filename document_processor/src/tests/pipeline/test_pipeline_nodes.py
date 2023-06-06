@@ -83,21 +83,21 @@ def mock_image():
 
 
 class DummyDocumentClassifierNode(MLModelDocumentClassifierNode):
-    def load_model(self, model_path):
+    def load_model(self, model_path, min_confidence):
         pass
 
-    def classify_image(self, image):
+    def classify_image(self, image, min_confidence):
         return "passport", np.array([[0.1, 0.1, 0.8]])
 
 
 class TestMLModelDocumentClassifierNode:
     @pytest.fixture
     def dummy_node(self, model_path):
-        return DummyDocumentClassifierNode(model_path)
+        return DummyDocumentClassifierNode(model_path, 0.5)
 
     def test_init_calls_load_model(self, mocker, model_path):
         mock_load_model = mocker.patch.object(DummyDocumentClassifierNode, 'load_model', autospec=True)
-        DummyDocumentClassifierNode(model_path)
+        DummyDocumentClassifierNode(model_path, 0.5)
         assert mock_load_model.called
 
     def test_process_document_calls_image_open(self, mocker, input_data, dummy_node, mock_image):
@@ -127,11 +127,11 @@ class TestMLModelDocumentClassifierNode:
 
     def test_classify_image_not_implemented(self, model_path):
         with pytest.raises(TypeError):
-            MLModelDocumentClassifierNode(model_path).classify_image(None)
+            MLModelDocumentClassifierNode(model_path, 0.5).classify_image(None)
 
     def test_load_model_not_implemented(self, model_path):
         with pytest.raises(TypeError):
-            MLModelDocumentClassifierNode(model_path).load_model(None)
+            MLModelDocumentClassifierNode(model_path, 0.5).load_model(None, 0.5)
 
 
 class TestEffNetDocumentClassifierNode:
@@ -144,7 +144,7 @@ class TestEffNetDocumentClassifierNode:
     @pytest.fixture
     def effnet_node(self, mocker, mock_model, model_path):
         mocker.patch("tensorflow.keras.models.load_model", return_value=mock_model)
-        node = EffNetDocumentClassifierNode(model_path)
+        node = EffNetDocumentClassifierNode(model_path, 0.5)
         return node
 
     def test_classify_image_calls_image_resize(self, mocker, effnet_node, mock_image):
@@ -183,7 +183,7 @@ class TestEffDetDocumentClassifierNode:
     def effdet_node(self, mocker, mock_model, model_path):
         mocker.patch("tensorflow.saved_model.load", return_value=mock_model)
         mocker.patch("numpy.array", return_value=mocker.MagicMock())
-        node = EffDetDocumentClassifierNode(model_path)
+        node = EffDetDocumentClassifierNode(model_path, 0.5)
         return node
 
     def test_classify_image_gets_image_data(self, mocker, effdet_node, mock_image):

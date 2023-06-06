@@ -27,7 +27,7 @@ class TestNeuralNetworkDocumentProcessor:
         pipeline = mocker.Mock(spec=DocumentProcessorPipeline)
         pipeline_builder.build.return_value = pipeline
 
-        processor = PDFDocumentProcessor(pipeline_builder)
+        processor = PDFDocumentProcessor(pipeline_builder, 0.5)
         document = b"PDF document contents"
         pipeline.process_document.return_value = {
             "pdf_text": pdf_text,

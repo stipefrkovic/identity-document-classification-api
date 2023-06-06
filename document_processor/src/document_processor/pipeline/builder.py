@@ -9,31 +9,31 @@ from .pipeline_nodes import PdfToImageConverterNode, EffNetDocumentClassifierNod
 
 class DocumentProcessorPipelineBuilder(ABC):
     @abstractmethod
-    def build(self):
+    def build(self, min_confidence):
         pass
 
 
 class EffNetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
-    def build(self):
+    def build(self, min_confidence):
         pipeline = DocumentProcessorPipeline()
 
         pdf_2_image_node = PdfToImageConverterNode(PdfToJpgConverter())
         pipeline.add_processing_node(pdf_2_image_node)
 
-        eff_net_node = EffNetDocumentClassifierNode("./src/document_processor/pipeline/models/effnet")
+        eff_net_node = EffNetDocumentClassifierNode("./src/document_processor/pipeline/models/effnet", min_confidence)
         pipeline.add_processing_node(eff_net_node)
         
         return pipeline
 
 
 class EffDetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
-    def build(self):
+    def build(self, min_confidence):
         pipeline = DocumentProcessorPipeline()
 
         pdf_2_image_node = PdfToImageConverterNode(PdfToJpgConverter())
         pipeline.add_processing_node(pdf_2_image_node)
 
-        eff_net_node = EffDetDocumentClassifierNode("./src/document_processor/pipeline/models/effdet")
+        eff_net_node = EffDetDocumentClassifierNode("./src/document_processor/pipeline/models/effdet/saved_model/saved_model", min_confidence)
         pipeline.add_processing_node(eff_net_node)
         
         return pipeline
