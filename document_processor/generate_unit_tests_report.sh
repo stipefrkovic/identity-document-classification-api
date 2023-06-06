@@ -1,7 +1,16 @@
-# For sonarqube to get the unit test coverage report. 
+#!/bin/bash
+# For sonarqube to get the unit test coverage report.
 
 # Run the tests and generate reports
 pytest --cov --cov-config=.coveragerc --cov-report xml:reports/coverage.xml --junitxml=reports/pytest.xml
+
+# Save the pytest exit code
+PYTEST_EXIT_CODE=$?
+
+# Forward unit tests status to CI
+if [[ $PYTEST_EXIT_CODE -ne 0 ]]; then
+    exit $PYTEST_EXIT_CODE
+fi
 
 # Fix paths in coverage.xml
 old_path="src/"
