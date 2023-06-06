@@ -10,6 +10,8 @@ from .pipeline_nodes import (
     EffDetDocumentClassifierNode,
 )
 
+from ..logger import logger
+
 
 class DocumentProcessorPipelineBuilder(ABC):
     @abstractmethod
@@ -24,12 +26,17 @@ class EffNetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
         pdf_2_image_node = PdfToImageConverterNode(PdfToJpgConverter())
         pipeline.add_processing_node(pdf_2_image_node)
 
-        if (kwargs.get("min_confidence") is None):
+        if (min_confidence := kwargs.get("min_confidence")) is None:
             raise ValueError("min_confidence must be set for EfficientNet model")
 
+        if (model_directory := kwargs.get("model_directory")) is None:
+            raise ValueError("model_directory must be set for EfficientNet model")
+
+        logger.debug(f"model_directory: {model_directory}")
+
         eff_net_node = EffNetDocumentClassifierNode(
-            "./src/document_processor/pipeline/models/effnet",
-            kwargs.get("min_confidence"),
+            model_directory,
+            min_confidence,
         )
         pipeline.add_processing_node(eff_net_node)
 
@@ -43,12 +50,16 @@ class EffDetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
         pdf_2_image_node = PdfToImageConverterNode(PdfToJpgConverter())
         pipeline.add_processing_node(pdf_2_image_node)
 
-        if (kwargs.get("min_confidence") is None):
+        if (model_directory := kwargs.get("model_directory")) is None:
+            raise ValueError("model_directory must be set for EfficientDet model")
+
+        if (min_confidence := kwargs.get("min_confidence")) is None:
             raise ValueError("min_confidence must be set for EfficientDet model")
 
         eff_det_node = EffDetDocumentClassifierNode(
-            "./src/document_processor/pipeline/models/effdet/saved_model/saved_model",
-            kwargs.get("min_confidence"),
+            # "./src/document_processor/pipeline/models/effdet/saved_model/saved_model",
+            model_directory,
+            min_confidence,
         )
         pipeline.add_processing_node(eff_det_node)
 
