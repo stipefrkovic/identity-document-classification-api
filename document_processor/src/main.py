@@ -8,17 +8,22 @@ from document_processor.pipeline.builder import (
     EffDetDocumentProcessorPipelineBuilder,
 )
 
+DEFAULT_MIN_CONFIDENCE = 0.5
+
 app = FastAPI()
 
 # Model to use is loaded from environment variable
 model = os.getenv("MODEL")
+
+# read min confidence from environment variable as int
+min_confidence = float(os.getenv("MIN_CONFIDENCE", DEFAULT_MIN_CONFIDENCE))
 
 if model == "EFFICIENTNET":
     pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
 elif model == "EFFICIENTDET":
     pipeline_builder = EffDetDocumentProcessorPipelineBuilder()
 
-document_processor = PDFDocumentProcessor(pipeline_builder)
+document_processor = PDFDocumentProcessor(pipeline_builder, min_confidence=min_confidence)
 
 
 @app.get("/")

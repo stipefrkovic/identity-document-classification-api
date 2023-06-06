@@ -28,11 +28,11 @@ class PdfToImageConverterNode(DocumentProcessingNode):
 class MLModelDocumentClassifierNode(DocumentProcessingNode):
     document_classes = ["driving_license", "id_card", "passport"]
 
-    def __init__(self, model_path):
-        self.model = self.load_model(model_path)
+    def __init__(self, model_path, min_confidence):
+        self.model = self.load_model(model_path, min_confidence)
 
     @abstractmethod
-    def load_model(self, model_path):
+    def load_model(self, model_path, min_confidence):
         pass
 
     @abstractmethod
@@ -51,7 +51,8 @@ class MLModelDocumentClassifierNode(DocumentProcessingNode):
 
 
 class EffNetDocumentClassifierNode(MLModelDocumentClassifierNode):
-    def load_model(self, model_path):
+    def load_model(self, model_path, min_confidence):
+        self.min_confidence = min_confidence
         return tf.keras.models.load_model(model_path)
 
     def classify_image(self, image) -> (str, list):
@@ -69,6 +70,9 @@ class EffNetDocumentClassifierNode(MLModelDocumentClassifierNode):
 
         # Get the highest prediction
         prediction = np.argmax(predictions[0])
+        if predictions[0][prediction] < self.min_confidence:
+            return None, None
+
         # Get predicted class
         predicted_class = self.document_classes[prediction]
 
@@ -76,19 +80,30 @@ class EffNetDocumentClassifierNode(MLModelDocumentClassifierNode):
 
 
 class EffDetDocumentClassifierNode(MLModelDocumentClassifierNode):
-    def load_model(self, model_path):
+    def load_model(self, model_path, min_confidence):
+        self.min_confidence = min_confidence
         return tf.saved_model.load(model_path)
 
-    def classify_image(self, image):
+    def classify_image(self, image) -> (str, list):
         (im_width, im_height) = image.size
         image_np = np.array(image.getdata()).reshape(
             (im_height, im_width, 3)).astype(np.uint8)
         input_tensor = tf.convert_to_tensor(image_np)
         input_tensor = input_tensor[tf.newaxis, ...]
         detections = self.model(input_tensor)
+        if len(detections['detection_scores'][0]) == 0:
+            return None, None
         highest_index = np.argmax(detections['detection_scores'][0])
         highest_class_index = detections['detection_classes'][0][highest_index].numpy().astype(np.int)
         highest_class = self.document_classes[highest_class_index - 1]
+        if detections['detection_scores'][0][highest_index].numpy() < self.min_confidence:
+            return None, None
+        prediction_confidences = []
+        for i, prediction in enumerate(detections['detection_scores'][0]):
+            document_class = self.document_classes[detections['detection_classes'][0][i].numpy().astype(np.int) - 1]
+            confidence = float(prediction.numpy())
+            if confidence >= self.min_confidence:
+                prediction_confidences.append((document_class, round(confidence, 2)))
 
-        return highest_class, None
+        return highest_class, prediction_confidences
 

@@ -4,6 +4,7 @@ import pdf2image as p2i
 import pytest
 from PIL import Image
 
+from document_processor.logger import logger
 from document_processor.pipeline.pdf_to_image_converter import (
     PdfToImageConverter,
     PdfToJpgConverter,
@@ -40,6 +41,11 @@ class TestPdfToJpgConverter:
 
         return pdf_bytes, image_bytes, request.param
 
+    @pytest.fixture
+    def mock_image(self):
+        image = Image.new('RGB', (60, 30))
+        return image
+
     def test_convert_image_bytes_not_empty(self, pdf_and_image_bytes):
         _, image_bytes, _ = pdf_and_image_bytes
         assert len(image_bytes.getvalue()) > 0
@@ -68,3 +74,14 @@ class TestPdfToJpgConverter:
         empty_pdf_bytes = b""
         with pytest.raises(p2i.exceptions.PDFPageCountError):
             PdfToJpgConverter().convert(empty_pdf_bytes)
+
+    def test_convert_calls_convert_from_bytes(self, mocker, pdf_and_image_bytes, mock_image):
+        pdf_bytes, _, _ = pdf_and_image_bytes
+        mock_p2i_convert = mocker.patch("document_processor.pipeline.pdf_to_image_converter.convert_from_bytes", return_value=[mock_image])
+        PdfToJpgConverter.convert(pdf_bytes)
+        mock_p2i_convert.assert_called_once_with(pdf_bytes)
+
+    def test_convert_returns_image_bytes(self, pdf_and_image_bytes):
+        pdf_bytes, _, _ = pdf_and_image_bytes
+        result = PdfToJpgConverter.convert(pdf_bytes)
+        assert isinstance(result, io.BytesIO)
