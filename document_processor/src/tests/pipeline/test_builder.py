@@ -37,7 +37,7 @@ class TestDocumentProcessorPipelineBuilder:
 
     @pytest.fixture(scope="class")
     def pipeline(self, builder):
-        return builder.build()
+        return builder.build(0.5)
 
     def test_initialization(self, builder):
         assert isinstance(builder, DocumentProcessorPipelineBuilder)
