@@ -52,6 +52,9 @@ class TestPdfToImageConverterNode:
 def model_path():
     return "fake_path"
 
+@pytest.fixture
+def min_confidence():
+    return 0.5
 
 @pytest.fixture
 def jpg_bytes():
@@ -83,7 +86,7 @@ def mock_image():
 
 
 class DummyDocumentClassifierNode(MLModelDocumentClassifierNode):
-    def load_model(self, model_path):
+    def load_model(self, model_path, min_confidence):
         pass
 
     def classify_image(self, image):
@@ -92,12 +95,12 @@ class DummyDocumentClassifierNode(MLModelDocumentClassifierNode):
 
 class TestMLModelDocumentClassifierNode:
     @pytest.fixture
-    def dummy_node(self, model_path):
-        return DummyDocumentClassifierNode(model_path)
+    def dummy_node(self, model_path, min_confidence):
+        return DummyDocumentClassifierNode(model_path, min_confidence)
 
-    def test_init_calls_load_model(self, mocker, model_path):
+    def test_init_calls_load_model(self, mocker, model_path, min_confidence):
         mock_load_model = mocker.patch.object(DummyDocumentClassifierNode, 'load_model', autospec=True)
-        DummyDocumentClassifierNode(model_path)
+        DummyDocumentClassifierNode(model_path, min_confidence)
         assert mock_load_model.called
 
     def test_process_document_calls_image_open(self, mocker, input_data, dummy_node, mock_image):
@@ -125,13 +128,13 @@ class TestMLModelDocumentClassifierNode:
         result_data = dummy_node.process_document(input_data)
         assert "prediction_confidences" in result_data
 
-    def test_classify_image_not_implemented(self, model_path):
+    def test_classify_image_not_implemented(self, model_path, min_confidence):
         with pytest.raises(TypeError):
-            MLModelDocumentClassifierNode(model_path).classify_image(None)
+            MLModelDocumentClassifierNode(model_path, min_confidence).classify_image(None)
 
-    def test_load_model_not_implemented(self, model_path):
+    def test_load_model_not_implemented(self, model_path, min_confidence):
         with pytest.raises(TypeError):
-            MLModelDocumentClassifierNode(model_path).load_model(None)
+            MLModelDocumentClassifierNode(model_path, min_confidence).load_model(None, min_confidence)
 
 
 class TestEffNetDocumentClassifierNode:
@@ -142,9 +145,9 @@ class TestEffNetDocumentClassifierNode:
         return mock_model
 
     @pytest.fixture
-    def effnet_node(self, mocker, mock_model, model_path):
+    def effnet_node(self, mocker, mock_model, model_path, min_confidence):
         mocker.patch("tensorflow.keras.models.load_model", return_value=mock_model)
-        node = EffNetDocumentClassifierNode(model_path)
+        node = EffNetDocumentClassifierNode(model_path, min_confidence)
         return node
 
     def test_classify_image_calls_image_resize(self, mocker, effnet_node, mock_image):
@@ -180,10 +183,10 @@ class TestEffDetDocumentClassifierNode:
         return mock_model
 
     @pytest.fixture
-    def effdet_node(self, mocker, mock_model, model_path):
+    def effdet_node(self, mocker, mock_model, model_path, min_confidence):
         mocker.patch("tensorflow.saved_model.load", return_value=mock_model)
         mocker.patch("numpy.array", return_value=mocker.MagicMock())
-        node = EffDetDocumentClassifierNode(model_path)
+        node = EffDetDocumentClassifierNode(model_path, min_confidence)
         return node
 
     def test_classify_image_gets_image_data(self, mocker, effdet_node, mock_image):

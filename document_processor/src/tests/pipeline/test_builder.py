@@ -18,7 +18,7 @@ from document_processor.pipeline.pipeline import (
 class TestDocumentProcessorPipelineBuilderAbstract:
     def test_document_processor_pipeline_builder_not_implemented(self):
         with pytest.raises(TypeError):
-            DocumentProcessorPipelineBuilder().build()
+            DocumentProcessorPipelineBuilder().build(0.5)
 
 
 class TestDocumentProcessorPipelineBuilder:
@@ -26,7 +26,7 @@ class TestDocumentProcessorPipelineBuilder:
         (EffNetDocumentProcessorPipelineBuilder, EffNetDocumentClassifierNode,
          "./src/document_processor/pipeline/models/effnet"),
         (EffDetDocumentProcessorPipelineBuilder, EffDetDocumentClassifierNode,
-         "./src/document_processor/pipeline/models/effdet")
+         "./src/document_processor/pipeline/models/effdet/saved_model/saved_model")
     ], scope="class")
     def builder_info(self, request):
         return request.param
@@ -37,7 +37,7 @@ class TestDocumentProcessorPipelineBuilder:
 
     @pytest.fixture(scope="class")
     def pipeline(self, builder):
-        return builder.build()
+        return builder.build(0.5)
 
     def test_initialization(self, builder):
         assert isinstance(builder, DocumentProcessorPipelineBuilder)

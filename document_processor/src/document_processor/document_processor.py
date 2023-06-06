@@ -5,9 +5,9 @@ from document_processor.pipeline.pipeline import DocumentProcessorPipeline
 
 
 class DocumentProcessor(ABC):
-    def __init__(self, pipeline_builder: DocumentProcessorPipelineBuilder):
+    def __init__(self, pipeline_builder: DocumentProcessorPipelineBuilder, min_confidence):
         self.document_processing_pipeline: DocumentProcessorPipeline = (
-            pipeline_builder.build()
+            pipeline_builder.build(min_confidence)
         )
 
     @abstractmethod
@@ -16,8 +16,8 @@ class DocumentProcessor(ABC):
 
 
 class PDFDocumentProcessor(DocumentProcessor):
-    def __init__(self, pipeline_builder: DocumentProcessorPipelineBuilder):
-        super().__init__(pipeline_builder)
+    def __init__(self, pipeline_builder: DocumentProcessorPipelineBuilder, min_confidence):
+        super().__init__(pipeline_builder, min_confidence)
 
     def process_document(self, document):
         data = {"pdf_bytes": document}

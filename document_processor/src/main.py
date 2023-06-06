@@ -13,12 +13,21 @@ app = FastAPI()
 # Model to use is loaded from environment variable
 model = os.getenv("MODEL")
 
+# read min confidence from environment variable as int
+
+min_confidence = os.getenv("MIN_CONFIDENCE")
+
+if min_confidence is None:
+    min_confidence = 0.5
+else:
+    min_confidence = float(min_confidence)
+
 if model == "EFFICIENTNET":
     pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
 elif model == "EFFICIENTDET":
     pipeline_builder = EffDetDocumentProcessorPipelineBuilder()
 
-document_processor = PDFDocumentProcessor(pipeline_builder)
+document_processor = PDFDocumentProcessor(pipeline_builder, min_confidence)
 
 
 @app.get("/")
