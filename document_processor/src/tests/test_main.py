@@ -6,7 +6,8 @@ from fastapi.testclient import TestClient
 
 import main
 from document_processor.document_processor import PDFDocumentProcessor
-from document_processor.pipeline.builder import EffNetDocumentProcessorPipelineBuilder
+from document_processor.pipeline.builder import EffNetDocumentProcessorPipelineBuilder, \
+    EffDetDocumentProcessorPipelineBuilder
 from main import app
 
 
@@ -34,6 +35,44 @@ class TestMain:
     def mock_file(self, mocker):
         mock_file = mocker.MagicMock()
         return mock_file
+
+    @pytest.fixture(scope="class")
+    def effnet_pipeline_builder(self):
+        pipeline_builder, model_path = main.get_pipeline_builder("EFFICIENTNET")
+        return pipeline_builder, model_path
+
+    @pytest.fixture(scope="class")
+    def effdet_pipeline_builder(self):
+        pipeline_builder, model_path = main.get_pipeline_builder("EFFICIENTDET")
+        return pipeline_builder, model_path
+
+    def test_get_env_vars_model(self, models):
+        main_model, _ = main.get_env_vars()
+        assert main_model in models
+
+    def test_get_env_vars_min_confidence_numeric(self):
+        _, main_min_conf = main.get_env_vars()
+        assert isinstance(main_min_conf, (int, float))
+
+    def test_get_pipeline_builder_effnet_builder(self, effnet_pipeline_builder):
+        pipeline_builder, _ = effnet_pipeline_builder
+        assert isinstance(pipeline_builder, EffNetDocumentProcessorPipelineBuilder)
+
+    def test_get_pipeline_builder_effnet_model_path(self, effnet_pipeline_builder):
+        _, model_path = effnet_pipeline_builder
+        assert model_path is not None and model_path != ""
+
+    def test_get_pipeline_builder_effdet_builder(self, effdet_pipeline_builder):
+        pipeline_builder, _ = effdet_pipeline_builder
+        assert isinstance(pipeline_builder, EffDetDocumentProcessorPipelineBuilder)
+
+    def test_get_pipeline_builder_effdet_model_path(self, effdet_pipeline_builder):
+        _, model_path = effdet_pipeline_builder
+        assert model_path is not None and model_path != ""
+
+    def test_get_pipeline_builder_raises_error(self):
+        with pytest.raises(ValueError):
+            main.get_pipeline_builder("NOTAREALMODEL")
 
     def test_read_root(self, client):
         response = client.get("/")

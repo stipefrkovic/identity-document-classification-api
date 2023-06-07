@@ -23,7 +23,7 @@ def get_env_vars():
     return model, min_confidence
 
 
-def get_pipeline_builder():
+def get_pipeline_builder(model):
     if model == "EFFICIENTNET":
         pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
         model_directory = "./src/document_processor/pipeline/models/effnet"
@@ -40,7 +40,7 @@ def get_pipeline_builder():
 
 if __name__ == "__main__":
     model, min_confidence = get_env_vars()
-    pipeline_builder, model_directory = get_pipeline_builder()
+    pipeline_builder, model_directory = get_pipeline_builder(model)
 
     document_processor = PDFDocumentProcessor(
         pipeline_builder, model_directory=model_directory, min_confidence=min_confidence
