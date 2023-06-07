@@ -49,9 +49,6 @@ class TestMain:
     def test_model_env_var(self, models):
         assert model in models
 
-    # def test_global_document_processor(self):
-    #     assert isinstance(main.document_processor, PDFDocumentProcessor)
-
     def test_post_process_document_returns_true_for_pdf(self, mock_file):
         mock_file.content_type = "application/pdf"
         assert main.check_document(mock_file)
