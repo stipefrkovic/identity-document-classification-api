@@ -189,15 +189,65 @@ class TestEffDetDocumentClassifierNode:
         node = EffDetDocumentClassifierNode(model_path, min_confidence)
         return node
 
-    def test_classify_image_gets_image_data(self, mocker, effdet_node, mock_image):
+    @pytest.fixture
+    def mock_detections(self, mocker):
+        mock_data_prediction_small = mocker.MagicMock()
+        mock_data_prediction_small.numpy.return_value = 0
+        mock_data_prediction_large = mocker.MagicMock()
+        mock_data_prediction_large.numpy.return_value = 1
+
+        mock_data = mocker.MagicMock()
+        mock_data.numpy.return_value = mocker.MagicMock(astype=lambda dtype: 1)
+        mock_detections = {"detection_scores": [[mock_data_prediction_large, mock_data_prediction_small]],
+                           "detection_classes": [[mock_data, mock_data], [mock_data]]}
+        return mock_detections
+
+    def test_get_detections_gets_image_data(self, mocker, effdet_node, mock_image):
         mocker.patch.object(mock_image, "getdata", return_value=mocker.MagicMock())
-        effdet_node.classify_image(mock_image)
+        effdet_node.get_detections(mock_image)
         mock_image.getdata.assert_called_once()
 
-    def test_classify_image_calls_model(self, mocker, effdet_node, mock_image, mock_model):
+    def test_get_detections_calls_model(self, mocker, effdet_node, mock_image, mock_model):
         mocker.patch.object(mock_image, "getdata", return_value=mocker.MagicMock())
-        effdet_node.classify_image(mock_image)
+        effdet_node.get_detections(mock_image)
         mock_model.assert_called_once()
+
+    def test_calculate_highest_index_returns_int(self, effdet_node):
+        mock_detections = {"detection_scores": [[5, 5, 5], [0, 0, 0]]}
+        result = effdet_node.calculate_highest_index(mock_detections)
+        assert isinstance(result, np.int64)
+
+    def test_calculate_highest_class_index_returns_int(self, effdet_node, mock_detections):
+        highest_index = 0
+        result = effdet_node.calculate_highest_class_index(mock_detections, highest_index)
+        assert isinstance(result, int)
+
+    def test_get_prediction_confidences_discards_all_small_confidences(self, effdet_node, mock_detections):
+        result = effdet_node.get_prediction_confidences(mock_detections)
+        assert len(result) == 1
+
+    def test_classify_image_calls_calculate_highest_index(self, mocker, effdet_node, mock_detections):
+        mocker.patch.object(effdet_node, "get_prediction_confidences", return_value=None)
+        mocker.patch.object(effdet_node, "get_detections", return_value=mock_detections)
+        mock_get_index = mocker.patch.object(effdet_node, "calculate_highest_index", return_value=0)
+        effdet_node.classify_image(mock_image)
+        mock_get_index.assert_called_once_with(mock_detections)
+
+    def test_classify_image_calculate_highest_class_index(self, mocker, effdet_node, mock_detections):
+        mocker.patch.object(effdet_node, "get_prediction_confidences", return_value=None)
+        mocker.patch.object(effdet_node, "get_detections", return_value=mock_detections)
+        mocker.patch.object(effdet_node, "calculate_highest_index", return_value=0)
+        mock_get_class_index = mocker.patch.object(effdet_node, "calculate_highest_class_index", return_value=1)
+        effdet_node.classify_image(mock_image)
+        mock_get_class_index.assert_called_once()
+
+    def test_classify_image_calls_get_prediction_confidences(self, mocker, effdet_node, mock_image, mock_detections):
+        mock_get_pred = mocker.patch.object(effdet_node, "get_prediction_confidences", return_value=None)
+        mocker.patch.object(effdet_node, "get_detections", return_value=mock_detections)
+        mocker.patch.object(effdet_node, "calculate_highest_index", return_value=0)
+        mocker.patch.object(effdet_node, "calculate_highest_class_index", return_value=1)
+        effdet_node.classify_image(mock_image)
+        mock_get_pred.assert_called_once()
 
     def test_classify_image_returns_tuple(self, mocker, effdet_node, mock_image):
         mocker.patch.object(mock_image, "getdata", return_value=mocker.MagicMock())
