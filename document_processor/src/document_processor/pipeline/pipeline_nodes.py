@@ -84,26 +84,44 @@ class EffDetDocumentClassifierNode(MLModelDocumentClassifierNode):
         self.min_confidence = min_confidence
         return tf.saved_model.load(model_path)
 
-    def classify_image(self, image) -> (str, list):
+    def get_detections(self, image):
         (im_width, im_height) = image.size
         image_np = np.array(image.getdata()).reshape(
             (im_height, im_width, 3)).astype(np.uint8)
         input_tensor = tf.convert_to_tensor(image_np)
         input_tensor = input_tensor[tf.newaxis, ...]
         detections = self.model(input_tensor)
-        if len(detections['detection_scores'][0]) == 0:
-            return None, None
-        highest_index = np.argmax(detections['detection_scores'][0])
-        highest_class_index = detections['detection_classes'][0][highest_index].numpy().astype(np.int)
-        highest_class = self.document_classes[highest_class_index - 1]
-        if detections['detection_scores'][0][highest_index].numpy() < self.min_confidence:
-            return None, None
+        return detections
+
+    def calculate_highest_index(self, detections):
+        return np.argmax(detections['detection_scores'][0])
+
+    def calculate_highest_class_index(self, detections, highest_index):
+        return detections['detection_classes'][0][highest_index].numpy().astype(np.int)
+
+    def get_prediction_confidences(self, detections):
         prediction_confidences = []
         for i, prediction in enumerate(detections['detection_scores'][0]):
             document_class = self.document_classes[detections['detection_classes'][0][i].numpy().astype(np.int) - 1]
             confidence = float(prediction.numpy())
             if confidence >= self.min_confidence:
                 prediction_confidences.append((document_class, round(confidence, 2)))
+
+        return prediction_confidences
+
+    def classify_image(self, image) -> (str, list):
+        detections = self.get_detections(image)
+        if len(detections['detection_scores'][0]) == 0:
+            return None, None
+
+        highest_index = self.calculate_highest_index(detections)
+        highest_class_index = self.calculate_highest_class_index(detections, highest_index)
+        highest_class = self.document_classes[highest_class_index - 1]
+
+        if detections['detection_scores'][0][highest_index].numpy() < self.min_confidence:
+            return None, None
+
+        prediction_confidences = self.get_prediction_confidences(detections)
 
         return highest_class, prediction_confidences
 
