@@ -12,13 +12,18 @@ DEFAULT_MIN_CONFIDENCE = 0.5
 app = FastAPI()
 document_processor = None
 
-if __name__ == "__main__":
+
+def get_env_vars():
     # Model to use is loaded from environment variable
     model = os.getenv("MODEL")
 
     # read min confidence from environment variable as int
     min_confidence = float(os.getenv("MIN_CONFIDENCE", DEFAULT_MIN_CONFIDENCE))
 
+    return model, min_confidence
+
+
+def get_pipeline_builder():
     if model == "EFFICIENTNET":
         pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
         model_directory = "./src/document_processor/pipeline/models/effnet"
@@ -29,6 +34,13 @@ if __name__ == "__main__":
         )
     else:
         raise ValueError("Invalid model specified in environment variable MODEL")
+
+    return pipeline_builder, model_directory
+
+
+if __name__ == "__main__":
+    model, min_confidence = get_env_vars()
+    pipeline_builder, model_directory = get_pipeline_builder()
 
     document_processor = PDFDocumentProcessor(
         pipeline_builder, model_directory=model_directory, min_confidence=min_confidence
