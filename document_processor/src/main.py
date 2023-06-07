@@ -9,21 +9,30 @@ from document_processor.pipeline.builder import (
 )
 
 DEFAULT_MIN_CONFIDENCE = 0.5
-
 app = FastAPI()
+document_processor = None
 
-# Model to use is loaded from environment variable
-model = os.getenv("MODEL")
+if __name__ == "__main__":
+    # Model to use is loaded from environment variable
+    model = os.getenv("MODEL")
 
-# read min confidence from environment variable as int
-min_confidence = float(os.getenv("MIN_CONFIDENCE", DEFAULT_MIN_CONFIDENCE))
+    # read min confidence from environment variable as int
+    min_confidence = float(os.getenv("MIN_CONFIDENCE", DEFAULT_MIN_CONFIDENCE))
 
-if model == "EFFICIENTNET":
-    pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
-elif model == "EFFICIENTDET":
-    pipeline_builder = EffDetDocumentProcessorPipelineBuilder()
+    if model == "EFFICIENTNET":
+        pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
+        model_directory = "./src/document_processor/pipeline/models/effnet"
+    elif model == "EFFICIENTDET":
+        pipeline_builder = EffDetDocumentProcessorPipelineBuilder()
+        model_directory = (
+            "./src/document_processor/pipeline/models/effdet/saved_model/saved_model"
+        )
+    else:
+        raise ValueError("Invalid model specified in environment variable MODEL")
 
-document_processor = PDFDocumentProcessor(pipeline_builder, min_confidence=min_confidence)
+    document_processor = PDFDocumentProcessor(
+        pipeline_builder, model_directory=model_directory, min_confidence=min_confidence
+    )
 
 
 @app.get("/")
