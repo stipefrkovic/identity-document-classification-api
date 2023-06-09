@@ -1,7 +1,6 @@
 import os
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from pydantic import BaseModel
-from contextlib import asynccontextmanager
 
 from document_processor.logger import logger
 from document_processor.document_processor import PDFDocumentProcessor

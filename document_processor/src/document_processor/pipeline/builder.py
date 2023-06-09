@@ -32,8 +32,6 @@ class EffNetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
         if (model_directory := kwargs.get("model_directory")) is None:
             raise ValueError("model_directory must be set for EfficientNet model")
 
-        logger.debug(f"model_directory: {model_directory}")
-
         eff_net_node = EffNetDocumentClassifierNode(
             model_directory,
             min_confidence,
