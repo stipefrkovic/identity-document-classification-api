@@ -1,7 +1,6 @@
 import os
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from pydantic import BaseModel
-from contextlib import asynccontextmanager
 
 from document_processor.logger import logger
 from document_processor.document_processor import PDFDocumentProcessor
@@ -26,6 +25,11 @@ def get_env_vars():
 
 
 def get_pipeline_builder(model):
+    """
+    Gets the pipeline builder of the pipeline with the corresponding model.
+    :param model: model in the pipeline.
+    :return: pipeline with the corresponding model.
+    """
     if model == "EFFICIENTNET":
         pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
         model_directory = "./src/document_processor/pipeline/models/effnet"
@@ -52,7 +56,11 @@ if "TESTING" not in os.environ:
 
 @app.get("/")
 def read_root():
-    return {"message": "Test"}
+    """
+    Get request for root directory to check that service is running.
+    :return: "Root".
+    """
+    return {"message": "Root"}
 
 
 class DocumentTypeResponse(BaseModel):
@@ -66,6 +74,11 @@ def check_document(document: File):
 
 @app.post("/document/")
 async def process_document(document: UploadFile):
+    """
+    Post request for document/ directory to classify a PDF document.
+    :param document: identity document to be classified.
+    :return: class of the identity document.
+    """
     if not check_document(document):
         raise HTTPException(
             status_code=400, detail="Invalid file type. File must be pdf."

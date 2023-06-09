@@ -76,7 +76,7 @@ class TestMain:
 
     def test_read_root(self, client):
         response = client.get("/")
-        assert response.json() == {"message": "Test"}
+        assert response.json() == {"message": "Root"}
 
     def test_post_without_document(self, client):
         response = client.post(DOC_DIR)
