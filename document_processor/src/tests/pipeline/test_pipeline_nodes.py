@@ -86,7 +86,7 @@ def mock_image():
 
 
 class DummyDocumentClassifierNode(MLModelDocumentClassifierNode):
-    def load_model(self, model_path, min_confidence):
+    def load_model(self, model_path):
         pass
 
     def classify_image(self, image):
@@ -97,6 +97,9 @@ class TestMLModelDocumentClassifierNode:
     @pytest.fixture
     def dummy_node(self, model_path, min_confidence):
         return DummyDocumentClassifierNode(model_path, min_confidence)
+
+    def test_init_sets_min_confidence(self, dummy_node, min_confidence):
+        assert dummy_node.min_confidence == min_confidence
 
     def test_init_calls_load_model(self, mocker, model_path, min_confidence):
         mock_load_model = mocker.patch.object(DummyDocumentClassifierNode, 'load_model', autospec=True)

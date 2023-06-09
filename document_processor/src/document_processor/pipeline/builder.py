@@ -14,13 +14,33 @@ from ..logger import logger
 
 
 class DocumentProcessorPipelineBuilder(ABC):
+    """
+    ABC for a DocumentProcessorPipelineBuilder.
+    """
     @abstractmethod
-    def build(self, min_confidence):
+    def build(self, *args, **kwargs):
+        """
+        Builds a DocumentProcessorPipeline.
+        :param args: args for the Nodes.
+        :param kwargs: kwargs for the Nodes.
+        :return: DocumentProcessorPipeline.
+        """
         pass
 
 
 class EffNetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
+    """
+    DocumentProcessorPipelineBuilder that builds a pipeline with
+    PDF to image conversion and
+    an EfficientNet model for document classification.
+    """
     def build(self, *args, **kwargs):
+        """
+        Builds a DocumentProcessorPipeline.
+        :param args: args for the Nodes.
+        :param kwargs: kwargs for the Nodes.
+        :return: DocumentProcessorPipeline.
+        """
         pipeline = DocumentProcessorPipeline()
 
         pdf_2_image_node = PdfToImageConverterNode(PdfToJpgConverter())
@@ -42,7 +62,18 @@ class EffNetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
 
 
 class EffDetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
+    """
+    DocumentProcessorPipelineBuilder that builds a pipeline with
+    PDF to image conversion and
+    an EfficientDet model for document classification.
+    """
     def build(self, *args, **kwargs):
+        """
+        Builds a DocumentProcessorPipeline.
+        :param args: args for the Nodes.
+        :param kwargs: kwargs for the Nodes.
+        :return: DocumentProcessorPipeline.
+        """
         pipeline = DocumentProcessorPipeline()
 
         pdf_2_image_node = PdfToImageConverterNode(PdfToJpgConverter())

@@ -11,35 +11,79 @@ from ..logger import logger
 
 
 class DocumentProcessingNode(ABC):
+    """
+    ABC for a DocumentProcessingNode.
+    """
     @abstractmethod
     def process_document(self, data: dict):
+        """
+        Process a document.
+        :param data: Dictionary containing the document and other data.
+        """
         pass
 
 
 class PdfToImageConverterNode(DocumentProcessingNode):
+    """
+    DocumentProcessingNode that converts a PDF into an image.
+    """
     def __init__(self, converter: PdfToImageConverter):
+        """
+        Initializes the PdfToImageConverterNode.
+        :param converter: PdfToImageConverter that will convert the PDF into an image.
+        """
         self.converter = converter
 
     def process_document(self, data: dict):
+        """
+        Converts a PDF into an image.
+        :param data: Dictionary containing the PDF.
+        :return: Dictionary containing the image.
+        """
         data["jpg_bytes"] = self.converter.convert(data["pdf_bytes"])
         return data
 
 
 class MLModelDocumentClassifierNode(DocumentProcessingNode):
+    """
+    DocumentProcessingNode that will classify an image with a Machine learning model.
+    """
+
     document_classes = ["driving_license", "id_card", "passport"]
 
     def __init__(self, model_path, min_confidence):
-        self.model = self.load_model(model_path, min_confidence)
+        """
+        Initializes a MLModelDocumentClassifierNode.
+        :param model_path: Path to the Machine Learning model.
+        :param min_confidence: Minimum required confidence of the classification otherwise classification is unknown.
+        """
+        self.model = self.load_model(model_path)
+        self.min_confidence = min_confidence
 
     @abstractmethod
-    def load_model(self, model_path, min_confidence):
+    def load_model(self, model_path):
+        """
+        Loads the Machine Learning model from the given path.
+        :param model_path: Path to the saved model.
+        :return: Machine Learning model.
+        """
         pass
 
     @abstractmethod
     def classify_image(self, image):
+        """
+        Classifies an image with the Machine Learning model.
+        :param image: Image to be classified.
+        :return: Class.
+        """
         pass
 
     def process_document(self, data: dict):
+        """
+        Classifies an image of a document.
+        :param data: Dictionary containing the image of the document.
+        :return: Dictionary containing document class and prediction confidences.
+        """
         jpg_bytes = data["jpg_bytes"]
         pil_image = Image.open(jpg_bytes)
         classification_result, prediction_confidences = self.classify_image(pil_image)
@@ -51,11 +95,23 @@ class MLModelDocumentClassifierNode(DocumentProcessingNode):
 
 
 class EffNetDocumentClassifierNode(MLModelDocumentClassifierNode):
-    def load_model(self, model_path, min_confidence):
-        self.min_confidence = min_confidence
+    """
+    MLModelDocumentClassifierNode that uses an EffNet model.
+    """
+    def load_model(self, model_path):
+        """
+        Loads the EffNet model.
+        :param model_path: Path to the EffNet model.
+        :return: EffNet model.
+        """
         return tf.keras.models.load_model(model_path)
 
     def classify_image(self, image) -> (str, list):
+        """
+        Classifies an image with the EffNet model.
+        :param image: Image to be classified.
+        :return: Class.
+        """
         image = image.resize((224, 224))
         # Convert the image into an array
         img_array = tf.keras.utils.img_to_array(image)
@@ -80,11 +136,23 @@ class EffNetDocumentClassifierNode(MLModelDocumentClassifierNode):
 
 
 class EffDetDocumentClassifierNode(MLModelDocumentClassifierNode):
-    def load_model(self, model_path, min_confidence):
-        self.min_confidence = min_confidence
+    """
+    MLModelDocumentClassifierNode that uses an EffDet model.
+    """
+    def load_model(self, model_path):
+        """
+        Loads the EffDet model.
+        :param model_path: Path to the EffDet model.
+        :return: EffDet model.
+        """
         return tf.saved_model.load(model_path)
 
     def get_detections(self, image):
+        """
+        Gets all the detections of the EffDet model.
+        :param image: Image to be detected.
+        :return: Detections.
+        """
         (im_width, im_height) = image.size
         image_np = np.array(image.getdata()).reshape(
             (im_height, im_width, 3)).astype(np.uint8)
@@ -94,12 +162,28 @@ class EffDetDocumentClassifierNode(MLModelDocumentClassifierNode):
         return detections
 
     def calculate_highest_index(self, detections):
+        """
+        Gets the index of the most confident detection.
+        :param detections: Detections.
+        :return: Index of the most confident detection.
+        """
         return np.argmax(detections['detection_scores'][0])
 
     def calculate_highest_class_index(self, detections, highest_index):
+        """
+        Gets the class of the most confident detection.
+        :param detections: Detections.
+        :param highest_index: Index of the most confident detection.
+        :return: Class of the most confident detection.
+        """
         return detections['detection_classes'][0][highest_index].numpy().astype(np.int)
 
     def get_prediction_confidences(self, detections):
+        """
+        Gets the confidences of the detections.
+        :param detections: Detections.
+        :return: Confidences of the detections.
+        """
         prediction_confidences = []
         for i, prediction in enumerate(detections['detection_scores'][0]):
             document_class = self.document_classes[detections['detection_classes'][0][i].numpy().astype(np.int) - 1]
@@ -110,6 +194,11 @@ class EffDetDocumentClassifierNode(MLModelDocumentClassifierNode):
         return prediction_confidences
 
     def classify_image(self, image) -> (str, list):
+        """
+        Classifies an image with the EffDet model.
+        :param image: Image to be classified.
+        :return: Class.
+        """
         detections = self.get_detections(image)
         if len(detections['detection_scores'][0]) == 0:
             return None, None
