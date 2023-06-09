@@ -1,7 +1,9 @@
 import os
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from pydantic import BaseModel
+from contextlib import asynccontextmanager
 
+from document_processor.logger import logger
 from document_processor.document_processor import PDFDocumentProcessor
 from document_processor.pipeline.builder import (
     EffNetDocumentProcessorPipelineBuilder,
@@ -38,8 +40,9 @@ def get_pipeline_builder(model):
     return pipeline_builder, model_directory
 
 
-if __name__ == "__main__":
+if "TESTING" not in os.environ:
     model, min_confidence = get_env_vars()
+    logger.info("Starting the API")
     pipeline_builder, model_directory = get_pipeline_builder(model)
 
     document_processor = PDFDocumentProcessor(
