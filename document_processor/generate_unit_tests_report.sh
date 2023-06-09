@@ -1,6 +1,9 @@
 #!/bin/bash
 # For sonarqube to get the unit test coverage report.
 
+# Set environment variable indicating unit testing
+export TESTING=True
+
 # Run the tests and generate reports
 pytest -v --cov --cov-config=.coveragerc --cov-report xml:reports/coverage.xml --junitxml=reports/pytest.xml
 
@@ -32,5 +35,8 @@ file="reports/pytest.xml"
 
 # Use sed to perform the replacement
 sed -i "s#${old_path}#${new_path}#g" "${file}"
+
+# Delete environment variable indicating unit testing
+unset TESTING
 
 

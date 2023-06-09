@@ -40,9 +40,9 @@ def get_pipeline_builder(model):
     return pipeline_builder, model_directory
 
 
-if "PYTEST_CURRENT_TEST" not in os.environ:
+if "TESTING" not in os.environ:
     model, min_confidence = get_env_vars()
-    logger.info("STarting the API")
+    logger.info("Starting the API")
     pipeline_builder, model_directory = get_pipeline_builder(model)
 
     document_processor = PDFDocumentProcessor(
