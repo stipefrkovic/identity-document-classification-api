@@ -4,16 +4,18 @@ This is the continued repository for the identity document (ID) classification A
 
 ## Table of Contents
 
-- [1. Tech Stack](#1-tech-stack)
-  - [Production](#production)
-  - [Development](#development)
-- [2. API Reference](#2-api-reference)
-  - [POST Identity document](#post-identity-document)
-- [3. Adding the trained model](#3-adding-the-trained-model)
-- [4. Run in Docker Compose - Development Mode](#4-run-in-docker-compose---development-mode)
-- [5. Run in Docker Compose - Production Mode](#5-run-in-docker-compose---production-mode)
-- [6. Project CI](#6-project-ci)
-  - [Unit Tests Report](#unit-tests-report)
+- [ING 2 Project - API](#ing-2-project---api)
+  - [Table of Contents](#table-of-contents)
+  - [1. Tech Stack](#1-tech-stack)
+    - [Production](#production)
+    - [Development](#development)
+  - [2. API Reference](#2-api-reference)
+    - [POST Identity document](#post-identity-document)
+  - [3. Adding the trained models](#3-adding-the-trained-models)
+  - [4. Run in Docker Compose - Development Mode](#4-run-in-docker-compose---development-mode)
+  - [5. Run in Docker Compose - Production Mode](#5-run-in-docker-compose---production-mode)
+  - [6. Project CI](#6-project-ci)
+    - [Unit Tests Report](#unit-tests-report)
 
 ## 1. Tech Stack
 
@@ -36,7 +38,7 @@ This project is providing the API:
 ### POST Identity document
 
 ```http
-  POST /document/
+  POST /classify-document/
 ```
 
 | Parameter  | Type   | Description                              |

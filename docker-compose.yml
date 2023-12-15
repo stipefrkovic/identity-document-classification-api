@@ -8,6 +8,9 @@ services:
     volumes:
       - ./document_processor/:/app
       - ./models/:/app/src/document_processor/pipeline/models/
+      - ./models/:/app/src/tests/test_models
     ports:
       - ${port:-8000}:${port:-8000}
     env_file: .env
+    environment:
+      MODE: DEVELOPMENT
