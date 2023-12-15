@@ -1,6 +1,6 @@
-# ING 2 Project - Production
+# ING 2 Project - API
 
-This is the production repository for the course Software Engineering. This API can receive a PDF of an identity document over a POST request and return the ID class (ID card, driver's license or passport) in the response.
+This is the continued repository for the identity document (ID) classification API which was created by Group ING 2 as a part of the course Software Engineering and in collaboration with ING. The API can receive a PDF of an ID over a POST request and return the ID class (ID card, driving license or passport) in the response.
 
 ## Table of Contents
 
@@ -31,7 +31,7 @@ This is the production repository for the course Software Engineering. This API 
 
 ## 2. API Reference
 
-This project is used using the an API.
+This project is providing the API:
 
 ### POST Identity document
 
