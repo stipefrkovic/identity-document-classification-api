@@ -31,7 +31,7 @@ This is the production repository for the course Software Engineering. This API 
 
 ## 2. API Reference
 
-This project is used using the an API.
+This project is used using the API:
 
 ### POST Identity document
 
