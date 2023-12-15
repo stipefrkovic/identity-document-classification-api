@@ -1,17 +1,16 @@
-# ING 2 Project - API
+# Identity Document Classification - API
 
 This is the continued repository for the identity document (ID) classification API. It was created by Group ING 2 as a part of the 2022-2023 Software Engineering course at the University of Groningen and was done in collaboration with ING. The API can receive a PDF of an ID over a POST request and return the ID class (ID card, driving license or passport) in the response.
 
 ## Table of Contents
 
-- [ING 2 Project - API](#ing-2-project---api)
+- [Identity Document Classification - API](#identity-document-classification---api)
   - [Table of Contents](#table-of-contents)
   - [1. Tech Stack](#1-tech-stack)
     - [Production](#production)
     - [Development](#development)
-  - [2. API Reference](#2-api-reference)
-    - [POST Identity document](#post-identity-document)
-  - [3. Adding the trained models](#3-adding-the-trained-models)
+  - [2. API Specification](#2-api-specification)
+  - [3. Adding trained models](#3-adding-trained-models)
   - [4. Run in Docker Compose - Development Mode](#4-run-in-docker-compose---development-mode)
   - [5. Run in Docker Compose - Production Mode](#5-run-in-docker-compose---production-mode)
   - [6. Project CI](#6-project-ci)
@@ -31,21 +30,11 @@ This is the continued repository for the identity document (ID) classification A
 - Python 3.9
   - Pytest
 
-## 2. API Reference
+## 2. API Specification
 
-This project is providing the API:
+They can be found [here](spec.yml).
 
-### POST Identity document
-
-```http
-  POST /classify-document/
-```
-
-| Parameter  | Type   | Description                              |
-| :--------- | :----- | :--------------------------------------- |
-| `document` | `file` | **Required**. PDF Identity document to be classified |
-
-## 3. Adding the trained models
+## 3. Adding trained models
 
 Inside the root directory of the `ing-nn-trainer` application, there is a directory called `model_export` which contains the trained models. These models need to be copied into a directory called `models` in the root directory of this project. Please do as follows:
 
