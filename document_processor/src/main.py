@@ -72,10 +72,10 @@ if mode != "TESTING":
 
 
 @app.get("/")
-def read_root():
+def api_running_check():
     """
     Get request for root directory to check that service is running.
-    :return: "Running".
+    :return: "{"message": "Running"}".
     """
     message = {"message": "Running"}
     return JSONResponse(content=message)
