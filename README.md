@@ -13,9 +13,7 @@ This is the continued repository for the identity document (ID) classification A
   - [3. Adding trained models](#3-adding-trained-models)
   - [4. Run in Docker Compose - Development Mode](#4-run-in-docker-compose---development-mode)
   - [5. Run in Docker Compose - Production Mode](#5-run-in-docker-compose---production-mode)
-  - [6. Project CI](#6-project-ci)
-    - [Unit Tests Report](#unit-tests-report)
-  - [7. Future Work](#7-future-work)
+  - [6. Future Work](#6-future-work)
 
 ## 1. Tech Stack
 
@@ -37,7 +35,7 @@ They can be found [here](spec.yml).
 
 ## 3. Adding trained models
 
-Inside the root directory of the `ing-nn-trainer` application, there is a directory called `model_export` which contains the trained models. These models need to be copied into a directory called `models` in the root directory of this project. Please do as follows:
+Inside the root directory of the trainer application, there is a directory called `model_export` which contains the trained models. These models need to be copied into a directory called `models` in the root directory of this project. Please do as follows:
 
 First create the `models` directory:
 
@@ -101,21 +99,7 @@ View the logs in follow mode:
 docker-compose -f docker-compose.prod.yml logs -f
 ```
 
-## 6. Project CI
-
-This project uses GitLab CI to ensure code quality.
-
-The pipeline builds the docker image, and runs code style checks and then runs tests.
-
-### Unit Tests Report
-
-To generate a unit tests report for sonarqube, run the following command:
-
-```terminal
-docker-compose exec app /bin/bash generate_unit_tests_report.sh
-```
-
-## 7. Future Work
+## 6. Future Work
 
  - Configure Docker and Tensorflow for GPUs
  - Configure prediction confidences
