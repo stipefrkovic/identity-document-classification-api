@@ -133,5 +133,5 @@ dmypy.json
 .vscode/
 
 # production branch rules
-models/*
-document_processor/src/tests/*
+# models/*
+# document_processor/src/tests/*
