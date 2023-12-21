@@ -37,13 +37,9 @@ They can be found [here](spec.yml).
 
 Inside the root directory of the trainer application, there is a directory called `model_export` which contains the trained models. These models need to be copied into a directory called `models` in the root directory of this project. Please do as follows:
 
-First create the `models` directory:
+Copy all of the contents (not the directory itself!) from the `model_export` directory into the `models` directory.
 
-```terminal
-mkdir models
-```
-
-Then, copy all of the contents (not the directory itself!) from the `model_export` directory into the `models` directory.
+Currently, the `models` directory contains dummy models in order to be able to start the API as well as run tests.
 
 ## 4. Run in Docker Compose - Development Mode
 
