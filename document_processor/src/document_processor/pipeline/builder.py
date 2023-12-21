@@ -86,7 +86,6 @@ class EffDetDocumentProcessorPipelineBuilder(DocumentProcessorPipelineBuilder):
             raise ValueError("min_confidence must be set for EfficientDet model")
 
         eff_det_node = EffDetDocumentClassifierNode(
-            # "./src/document_processor/pipeline/models/effdet/saved_model/saved_model",
             model_directory,
             min_confidence,
         )

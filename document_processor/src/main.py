@@ -36,11 +36,11 @@ def get_pipeline_builder(model):
     """
     if model == "EFFICIENTNET":
         pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
-        model_directory = "./src/document_processor/pipeline/models/effnet/"
+        model_directory = "/app/models/effnet"
     elif model == "EFFICIENTDET":
         pipeline_builder = EffDetDocumentProcessorPipelineBuilder()
         model_directory = (
-            "./src/document_processor/pipeline/models/effdet/saved_model/saved_model"
+            "/app/models/effdet/saved_model/saved_model"
         )
     else:
         raise ValueError("Invalid model specified in environment variable MODEL")
