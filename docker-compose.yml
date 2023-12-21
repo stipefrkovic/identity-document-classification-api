@@ -4,10 +4,12 @@ services:
   app:
     container_name: document-processor
     build: ./document_processor
-    command: uvicorn main:app --app-dir ./src/ --host 0.0.0.0 --port ${port:-8000} --reload
+    command: uvicorn main:app --app-dir ./document_processor/src/ --host 0.0.0.0 --port ${port:-8000} --reload
     volumes:
-      - ./document_processor/:/app
-      - ./models/:/app/src/document_processor/pipeline/models/
+      - ./document_processor/:/app/document_processor
+      - ./models/:/app/models
     ports:
       - ${port:-8000}:${port:-8000}
     env_file: .env
+    environment:
+      MODE: DEVELOPMENT

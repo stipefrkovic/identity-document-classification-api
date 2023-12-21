@@ -28,7 +28,7 @@ class TestEffNetDocumentProcessorPipelineBuilder:
 
     @pytest.fixture(scope="class")
     def pipeline(self, builder):
-        return builder.build(min_confidence=0.5, model_directory="./src/tests/test_models/effnet")
+        return builder.build(min_confidence=0.5, model_directory="./models/effnet")
 
     def test_initialization(self, builder):
         assert isinstance(builder, DocumentProcessorPipelineBuilder)
@@ -65,7 +65,7 @@ class TestEffDetDocumentProcessorPipelineBuilder:
     @pytest.fixture(scope="class")
     def pipeline(self, builder):
         return builder.build(min_confidence=0.5,
-                             model_directory="./src/tests/test_models/effdet/saved_model/saved_model")
+                             model_directory="./models/effdet/saved_model/saved_model")
 
     def test_initialization(self, builder):
         assert isinstance(builder, DocumentProcessorPipelineBuilder)

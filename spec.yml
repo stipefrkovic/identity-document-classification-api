@@ -1,0 +1,68 @@
+openapi: '3.0.2'
+info:
+  title: Identity Document Classification API Specification
+  version: '1.0'
+
+servers:
+  - url: http://localhost:8000
+    description: Local Host
+
+components:
+  schemas:
+    prediction_confidence:
+      type: array
+      items:
+        oneOf:
+          - type: string
+          - type: number
+
+paths:
+  /:
+    get:
+      summary: Test if API is running
+      description: Test if API is running
+      responses:
+        '200':
+          description: OK
+
+
+  /classify-document:
+    post:
+      summary: Classify a PDF document
+      description: Classify a PDF document
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                document:
+                  type: string
+                  format: binary
+                  description: PDF of the document
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  document_type:
+                    type: string
+                    description: Class of the identity document
+                  meta:
+                    type: object
+                    properties:
+                      filename:
+                        type: string
+                        description: Name of the uploaded file
+                      prediction_confidences:
+                        type: array
+                        description: Prediction confidences for each class
+                        items:
+                          $ref: '#/components/schemas/prediction_confidence'
+                        minItems: 3
+
+

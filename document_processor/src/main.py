@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from document_processor.logger import logger
@@ -10,18 +11,21 @@ from document_processor.pipeline.builder import (
 )
 
 DEFAULT_MIN_CONFIDENCE = 0.5
+
 app = FastAPI()
 document_processor = None
-
 
 def get_env_vars():
     # Model to use is loaded from environment variable
     model = os.getenv("MODEL")
 
-    # read min confidence from environment variable as int
+    # Read min confidence from environment variable as int
     min_confidence = float(os.getenv("MIN_CONFIDENCE", DEFAULT_MIN_CONFIDENCE))
 
-    return model, min_confidence
+    # Mode in which the API should run
+    mode = os.environ.get("MODE")
+
+    return model, min_confidence, mode
 
 
 def get_pipeline_builder(model):
@@ -32,11 +36,11 @@ def get_pipeline_builder(model):
     """
     if model == "EFFICIENTNET":
         pipeline_builder = EffNetDocumentProcessorPipelineBuilder()
-        model_directory = "./src/document_processor/pipeline/models/effnet"
+        model_directory = "/app/models/effnet"
     elif model == "EFFICIENTDET":
         pipeline_builder = EffDetDocumentProcessorPipelineBuilder()
         model_directory = (
-            "./src/document_processor/pipeline/models/effdet/saved_model/saved_model"
+            "/app/models/effdet/saved_model/saved_model"
         )
     else:
         raise ValueError("Invalid model specified in environment variable MODEL")
@@ -44,9 +48,22 @@ def get_pipeline_builder(model):
     return pipeline_builder, model_directory
 
 
-if "TESTING" not in os.environ:
-    model, min_confidence = get_env_vars()
-    logger.info("Starting the API")
+model, min_confidence, mode = get_env_vars()
+
+if mode != "TESTING":
+    logger.info(f"Starting the API in {mode} mode")
+
+    if mode == "DEVELOPMENT":
+        logger.warn(f"Adding CORS!")
+        from fastapi.middleware.cors import CORSMiddleware
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+
     pipeline_builder, model_directory = get_pipeline_builder(model)
 
     document_processor = PDFDocumentProcessor(
@@ -55,12 +72,13 @@ if "TESTING" not in os.environ:
 
 
 @app.get("/")
-def read_root():
+def api_running_check():
     """
     Get request for root directory to check that service is running.
-    :return: "Root".
+    :return: "{"message": "Running"}".
     """
-    return {"message": "Root"}
+    message = {"message": "Running"}
+    return JSONResponse(content=message)
 
 
 class DocumentTypeResponse(BaseModel):
@@ -72,7 +90,7 @@ def check_document(document: File):
     return document.content_type == "application/pdf"
 
 
-@app.post("/document/")
+@app.post("/classify-document/")
 async def process_document(document: UploadFile):
     """
     Post request for document/ directory to classify a PDF document.
