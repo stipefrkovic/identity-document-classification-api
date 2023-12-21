@@ -15,6 +15,7 @@ This is the continued repository for the identity document (ID) classification A
   - [5. Run in Docker Compose - Production Mode](#5-run-in-docker-compose---production-mode)
   - [6. Project CI](#6-project-ci)
     - [Unit Tests Report](#unit-tests-report)
+  - [7. Future Work](#7-future-work)
 
 ## 1. Tech Stack
 
@@ -113,3 +114,9 @@ To generate a unit tests report for sonarqube, run the following command:
 ```terminal
 docker-compose exec app /bin/bash generate_unit_tests_report.sh
 ```
+
+## 7. Future Work
+
+ - Configure Docker and Tensorflow for GPUs
+ - Configure prediction confidences
+ - Configure model deployment
