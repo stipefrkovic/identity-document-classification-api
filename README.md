@@ -1,10 +1,10 @@
-# Identity Document Classification - API
+# Identity Document Classification, Part 3/3: API
 
 This is the continued repository for the identity document (ID) classification API. It was created by Group ING 2 as a part of the 2022-2023 Software Engineering course at the University of Groningen and was done in collaboration with ING. The API can receive a PDF of an ID over a POST request and return the ID class (ID card, driving license or passport) in the response.
 
 ## Table of Contents
 
-- [Identity Document Classification - API](#identity-document-classification---api)
+- [Identity Document Classification, Part 3/3: API](#identity-document-classification-part-33-api)
   - [Table of Contents](#table-of-contents)
   - [1. Tech Stack](#1-tech-stack)
     - [Production](#production)
