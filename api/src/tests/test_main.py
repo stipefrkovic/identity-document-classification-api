@@ -97,7 +97,7 @@ class TestMain:
         assert not main.check_document(mock_file)
 
     def test_post_process_document_calls_document_processor(self, mocker, client):
-        with open("/app/document_processor/src/tests/files/id_card_1.pdf", "rb") as f:
+        with open("/app/api/src/tests/files/id_card_1.pdf", "rb") as f:
             mock_data = mocker.MagicMock()
             mocker.patch.object(mock_data, "get", return_value=None)
             mock_process_document = mocker.patch.object(main.document_processor,
@@ -108,43 +108,43 @@ class TestMain:
             mock_process_document.assert_called_once()
 
     def test_post_pdf_process_document_accepted(self, client):
-        with open("/app/document_processor/src/tests/files/id_card_1.pdf", "rb") as f:
+        with open("/app/api/src/tests/files/id_card_1.pdf", "rb") as f:
             response = client.post(CLASSIFY_DOC_DIR, files={"document": f})
             assert response.status_code == 200
 
     def test_post_pdf_process_document_returns_correct_response_on_classified(self, client):
-        with open("/app/document_processor/src/tests/files/id_card_1.pdf", "rb") as f:
+        with open("/app/api/src/tests/files/id_card_1.pdf", "rb") as f:
             response = client.post(CLASSIFY_DOC_DIR, files={"document": f})
             json_response = response.json()
             assert json_response is not None
 
     def test_post_pdf_process_document_document_type_is_str(self, client):
-        with open("/app/document_processor/src/tests/files/id_card_1.pdf", "rb") as f:
+        with open("/app/api/src/tests/files/id_card_1.pdf", "rb") as f:
             response = client.post(CLASSIFY_DOC_DIR, files={"document": f})
             assert isinstance(response.json().get("document_type"), str)
 
     def test_post_pdf_process_document_returns_correct_document_type_on_classified(self, client):
-        with open("/app/document_processor/src/tests/files/id_card_1.pdf", "rb") as f:
+        with open("/app/api/src/tests/files/id_card_1.pdf", "rb") as f:
             response = client.post(CLASSIFY_DOC_DIR, files={"document": f})
             assert response.json().get("document_type") == "id_card"
 
     def test_post_pdf_process_document_prediction_confidences_is_dict(self, client):
-        with open("/app/document_processor/src/tests/files/id_card_1.pdf", "rb") as f:
+        with open("/app/api/src/tests/files/id_card_1.pdf", "rb") as f:
             response = client.post(CLASSIFY_DOC_DIR, files={"document": f})
             json_response = response.json()
             assert isinstance(json_response.get("meta"), dict)
 
     def test_post_pdf_process_document_returns_prediction_confidences_on_classified(self, client):
-        with open("/app/document_processor/src/tests/files/id_card_1.pdf", "rb") as f:
+        with open("/app/api/src/tests/files/id_card_1.pdf", "rb") as f:
             response = client.post(CLASSIFY_DOC_DIR, files={"document": f})
             assert response.json().get("meta")["prediction_confidences"] is not None
 
     def test_post_process_document_jpg_file_rejected(self, client):
-        with open("/app/document_processor/src/tests/files/id.jpg", "rb") as f:
+        with open("/app/api/src/tests/files/id.jpg", "rb") as f:
             response = client.post(CLASSIFY_DOC_DIR, files={"document": f})
             assert response.status_code == 400
 
     def test_post_process_document_jpg_file_response_on_rejected(self, client):
-        with open("/app/document_processor/src/tests/files/id.jpg", "rb") as f:
+        with open("/app/api/src/tests/files/id.jpg", "rb") as f:
             response = client.post(CLASSIFY_DOC_DIR, files={"document": f})
             assert response.json() == {"detail": "Invalid file type. File must be pdf."}

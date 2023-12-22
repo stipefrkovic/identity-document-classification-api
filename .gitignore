@@ -134,4 +134,4 @@ dmypy.json
 
 # production branch rules
 # models/*
-# document_processor/src/tests/*
+# api/src/tests/*
