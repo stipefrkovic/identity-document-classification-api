@@ -95,6 +95,23 @@ View the logs in follow mode:
 docker-compose -f docker-compose.prod.yml logs -f
 ```
 
+## 7. Installing Dependencies locally for typecheck
+
+Install pipenv:
+
+```terminal
+pip install pipenv
+```
+
+Start pipenv shell and install (in root of repo where `Pipfile` is):
+
+```terminal
+pipenv shell
+pipenv install
+```
+
+If using vscode, use command pallet to find `Python: Select Interpreter` and then choose `api-...` and choose that. It will have a random string at the end.
+
 ## 6. Future Work
 
  - Configure Docker and Tensorflow for GPUs
